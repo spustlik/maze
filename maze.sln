@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "maze.client", "maze.client\maze.client.esproj", "{2BFB6FC5-BE89-4FFE-A4DE-957F88FB1254}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BFB6FC5-BE89-4FFE-A4DE-957F88FB1254}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BFB6FC5-BE89-4FFE-A4DE-957F88FB1254}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BFB6FC5-BE89-4FFE-A4DE-957F88FB1254}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2BFB6FC5-BE89-4FFE-A4DE-957F88FB1254}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BFB6FC5-BE89-4FFE-A4DE-957F88FB1254}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BFB6FC5-BE89-4FFE-A4DE-957F88FB1254}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0C7F3B0F-3316-4B49-9B19-349BB0CAFC2D}
+	EndGlobalSection
+EndGlobal
