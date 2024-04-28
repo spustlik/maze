@@ -18,7 +18,7 @@ export class Maze {
         public Height: number
     ) {
         if (Width % 2 == 0 || Height % 2 == 0)
-            throw new Error(`Maze size must be odd (${Width}x${Height}`);
+            throw new Error(`Maze size must be odd (${Width}x${Height})`);
         this.data = new Array(Width * Height);
     }
 

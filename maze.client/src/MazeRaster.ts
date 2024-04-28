@@ -1,12 +1,11 @@
 ﻿import * as ex from 'excalibur';
 import { MazeCell, Maze } from './Maze.js';
 
-const SIZE = 6;
 export class MazeRaster extends ex.Raster {
-    constructor(public maze: Maze) {
+    constructor(public maze: Maze, private cellSize: number = 6) {
         super();
-        this.width = maze.Width * SIZE;
-        this.height = maze.Height * SIZE;
+        this.width = maze.Width * cellSize;
+        this.height = maze.Height * cellSize;
 
     }
     clone(): ex.Graphic {
@@ -23,7 +22,7 @@ export class MazeRaster extends ex.Raster {
                     ctx.fillStyle = 'black';
                 else
                     ctx.fillStyle = 'orange';
-                ctx.fillRect(x * SIZE, y * SIZE, SIZE, SIZE);
+                ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
             }
         }
     }
