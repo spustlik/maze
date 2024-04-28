@@ -2,7 +2,15 @@ import * as ex from 'excalibur';
 
 type ClickEvent = () => void;
 
-export function createButton(text:string, args: { pos: ex.Vector, click: ClickEvent, width?: number, height?: number }) {
+export function createButton(text: string,
+    args: {
+        pos: ex.Vector,
+        click: ClickEvent,
+        width?: number,
+        height?: number,
+        font?: ex.Font,
+        fontSize?: number
+    }) {
     const btn = new ex.ScreenElement({
         x: args.pos.x,
         y: args.pos.y,
@@ -16,13 +24,12 @@ export function createButton(text:string, args: { pos: ex.Vector, click: ClickEv
         width: args.width ?? 170,
         height: args.height ?? 40,
         color: C1,
-
     });
 
     const t = new ex.Text({
         color: CF,
         text: text,
-        font: new ex.Font({ bold: true, size: 20 })
+        font: args.font ?? new ex.Font({ bold: true, size: args.fontSize ?? 20 })
     });
 
     var g = new ex.GraphicsGroup({

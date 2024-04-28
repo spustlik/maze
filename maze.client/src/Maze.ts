@@ -86,7 +86,7 @@ export class Maze {
     }
     static read(s: string): Maze {
         var lines = s.split('\n');
-        lines = lines.filter(l => !l.startsWith('#'));
+        lines = lines.filter(l => !l.startsWith('#')).filter(l => l.trim().length > 1);
         var r = new Maze(lines[0].length, lines.length);
         for (var y = 0; y < r.Height; y++) {
             for (var x = 0; x < r.Width; x++) {

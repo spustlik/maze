@@ -11,7 +11,7 @@ type SceneDef = {
     create: () => ex.Scene
 };
 export class HomeScene extends ex.Scene {
-    scenes :SceneDef[] = [
+    scenes: SceneDef[] = [
         { key: 'breakout', title: 'Breakout', create: () => createBreakoutScene() },
         { key: 'mazegen', title: 'Maze generator', create: () => createMazeGeneratorScene() },
         { key: 'maze', title: 'Maze', create: () => createMazeScene() },
@@ -21,28 +21,42 @@ export class HomeScene extends ex.Scene {
         super();
     }
 
-    onInitialize(game:ex.Engine) {
+    onInitialize(game: ex.Engine) {
         super.onInitialize(game);
         for (var i = 0; i < this.scenes.length; i++) {
             const def = this.scenes[i];
             const btn = createButton(def.title, {
                 pos: ex.vec(20, 40 + i * 80),
-                click: () => {
-                    if (!game.scenes[def.key]) {
-                        var s = this.createScene(game, def);
-                    }
-                    game.goToScene(def.key);
-                }
+                click: () => this.gotoScene(game, def)
             });
             this.add(btn);
         }
+        if (window.location.hash) {
+            var s = window.location.hash;
+            if (s.startsWith('#'))
+                s = s.substring(1);
+            if (game.currentSceneName != s) {
+                var found = this.scenes.filter(a => a.key == s)[0];
+                console.log('init', s, found);
+                if (found) {
+                    this.gotoScene(game, found);
+                }
+            }
+        }
     }
 
-    createScene(game:ex.Engine, s:SceneDef) {
+    gotoScene(game: ex.Engine, def: SceneDef) {
+        if (!game.scenes[def.key]) {
+            var s = this.createScene(game, def);
+        }
+        game.goToScene(def.key);
+        window.location.hash = def.key;
+    }
+    createScene(game: ex.Engine, s: SceneDef) {
         const instance = s.create();
 
         var homeBtn = createButton('X', {
-            pos: ex.vec(5, 5),
+            pos: ex.vec(game.drawWidth-45, 5),
             click: () => {
                 game.goToScene('root');
             },
