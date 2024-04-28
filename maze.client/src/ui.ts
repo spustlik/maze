@@ -9,25 +9,30 @@ export function createButton(text: string,
         width?: number,
         height?: number,
         font?: ex.Font,
-        fontSize?: number
+        fontSize?: number,
+        colorBg?: ex.Color,
+        colorHightlightBg?: ex.Color,
+        colorFg?: ex.Color
+        colorHightlightFg?: ex.Color,
     }) {
     const btn = new ex.ScreenElement({
         x: args.pos.x,
         y: args.pos.y,
     });
 
-    const C1 = ex.Color.fromHex('8080FF');
-    const C2 = ex.Color.fromHex('d0d0FF');
-    const CF = ex.Color.Black;
+    const COLOR_BG = args.colorBg ?? ex.Color.fromHex('8080FF');
+    const COLOR_BGHL = args.colorHightlightBg ?? ex.Color.fromHex('d0d0FF');
+    const COLOR_FG = args.colorFg ?? ex.Color.Black;
+    const COLOR_FGHL = args.colorHightlightFg ?? COLOR_FG;
 
     const r = new ex.Rectangle({
         width: args.width ?? 170,
         height: args.height ?? 40,
-        color: C1,
+        color: COLOR_BG,
     });
 
     const t = new ex.Text({
-        color: CF,
+        color: COLOR_FG,
         text: text,
         font: args.font ?? new ex.Font({ bold: true, size: args.fontSize ?? 20 })
     });
@@ -39,8 +44,8 @@ export function createButton(text: string,
         ]
     })
     btn.graphics.add(g);
-    btn.on('pointerenter', () => r.color = C2);
-    btn.on('pointerleave', () => r.color = C1);
+    btn.on('pointerenter', () => { r.color = COLOR_BGHL; t.color = COLOR_FGHL; });
+    btn.on('pointerleave', () => { r.color = COLOR_BG; t.color = COLOR_FG; });
     btn.on('pointerup', () => args.click());
     return btn;
 }

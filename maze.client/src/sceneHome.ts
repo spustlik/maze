@@ -61,7 +61,7 @@ export class HomeScene extends ex.Scene {
                 game.goToScene('root');
             },
             width: 40,
-            height: 40
+            height: 40,
         });
         instance.add(homeBtn);
 
