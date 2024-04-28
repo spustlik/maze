@@ -1,13 +1,6 @@
 ﻿import { MazeCell, Maze } from './Maze';
 import { RandomGenerator } from './RandomGenerator';
-import { ICoordinates, Point } from './Point';
-
-export const enum Direction {
-    Left = 0,
-    Right = 1,
-    Up = 2,
-    Down = 3
-}
+import { PointDirection, ICoordinates, Point, getAroundPoints, getPointInDirection } from './common/Point';
 
 export class MazeGenerator {
     rnd: RandomGenerator;
@@ -43,9 +36,9 @@ export class MazeGenerator {
         //Pop a cell from the stack and make it a current cell
         this.pos = this.todo.pop();
         this.maze.Set(this.pos, MazeCell.VISITED);
-        var next = this.getNextPoints(this.pos, 2)
-            .map((a, i) => ({ pt: a, d: i as Direction, v: this.maze.Get(a) }))
-            .filter(a => this.isInMaze(a.pt) )
+        var next = getAroundPoints(this.pos, 2)
+            .map((a, i) => ({ pt: a, d: i as PointDirection, v: this.maze.Get(a) }))
+            .filter(a => this.maze.isIn(a.pt,1) )
             .filter(a => a.v != MazeCell.VISITED);
 
         //If the current cell has any neighbours which have not been visited
@@ -55,7 +48,7 @@ export class MazeGenerator {
             //Choose one of the unvisited neighbours
             var r = this.rnd.next(next.length - 1);
             //Remove the wall between the current cell and the chosen cell
-            var wall = this.getPointInDirection(this.pos, next[r].d);
+            var wall = getPointInDirection(this.pos, next[r].d);
             this.maze.Set(wall, MazeCell.VISITED);
             //Mark the chosen cell as visited and push it to the stack
             this.maze.Set(next[r].pt, MazeCell.VISITED);
@@ -66,8 +59,8 @@ export class MazeGenerator {
                 next = next.splice(r, 1);
                 if (next.length > 0) {
                     var loop = next[this.rnd.next(next.length - 1)];
-                    var loop2 = this.getPointInDirection(loop.pt, loop.d);
-                    if (this.isInMaze(loop2)) {
+                    var loop2 = getPointInDirection(loop.pt, loop.d);
+                    if (this.maze.isIn(loop2,1)) {
                         this.maze.Set(loop2, MazeCell.VISITED);
                         //this.maze.Set(loop.pt, MazeCell.VISITED);
                     }
@@ -75,33 +68,5 @@ export class MazeGenerator {
             }
         }
         return this.todo.length > 0;
-    }
-    isInMaze(pt: ICoordinates): boolean {
-        return pt.x >= 1 && pt.y >= 1 && pt.x < this.maze.Width - 1 && pt.y < this.maze.Height - 1;
-    }
-    getNextPoints(c: ICoordinates, offset = 1): ICoordinates[] {
-        var { x, y } = c;
-        return [
-            { x: x - offset, y },
-            { x: x + offset, y },
-            { x, y: y - offset },
-            { x, y: y + offset }
-        ];
-        //faster than
-        //return [
-        //    this.getPointInDirection(c, Direction.Left, offset),
-        //    this.getPointInDirection(c, Direction.Right, offset),
-        //    this.getPointInDirection(c, Direction.Up, offset),
-        //    this.getPointInDirection(c, Direction.Down, offset),
-        //];
-    }
-    getPointInDirection(pos: ICoordinates, d: Direction): ICoordinates {
-        const OFFSET_TABLE = [
-            { x: -1, y: 0 },
-            { x: 1, y: 0 },
-            { x: 0, y: -1 },
-            { x: 0, y: 1 }
-        ];
-        return { x: pos.x + OFFSET_TABLE[d].x, y: pos.y + OFFSET_TABLE[d].y };
     }
 }

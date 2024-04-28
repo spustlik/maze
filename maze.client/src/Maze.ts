@@ -1,4 +1,4 @@
-import { ICoordinates } from "./Point";
+import { ICoordinates } from "./common/Point";
 
 function trunc(c: ICoordinates): ICoordinates {
     return { x: Math.trunc(c.x), y: Math.trunc(c.y) };
@@ -17,10 +17,8 @@ export class Maze {
         public Width: number,
         public Height: number
     ) {
-        if (this.Width % 2 == 0)
-            this.Width--;
-        if (this.Height % 2 == 0)
-            this.Height--;
+        if (Width % 2 == 0 || Height % 2 == 0)
+            throw new Error(`Maze size must be odd (${Width}x${Height}`);
         this.data = new Array(Width * Height);
     }
 
@@ -63,7 +61,9 @@ export class Maze {
             this.Set({ x: s.x, y: s.y + y }, v);
         }
     }
-
+    isIn(pt: ICoordinates, offset = 0): boolean {
+        return pt.x >= offset && pt.y >= offset && pt.x < this.Width - offset && pt.y < this.Height - offset;
+    }
     dump() {
         var r: string[] = [];
         for (var y = 0; y < this.Height; y++) {
@@ -89,12 +89,14 @@ export class Maze {
         lines = lines.filter(l => !l.startsWith('#')).filter(l => l.trim().length > 1);
         var r = new Maze(lines[0].length, lines.length);
         for (var y = 0; y < r.Height; y++) {
-            for (var x = 0; x < r.Width; x++) {
-                var c = lines[x + y * r.Width];
+            var line = lines[y];
+            for (var x = 0; x < line.length; x++) {
+                var c = line[x];
                 if (c != ' ')
                     r.Set({ x, y }, Number(c));
             }
         }
+        console.log('load maze', r)
         return r;
     }
 }

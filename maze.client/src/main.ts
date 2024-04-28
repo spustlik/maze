@@ -3,7 +3,7 @@ import { createScene  as createSceneHome } from './sceneHome';
 import { createMazeGeneratorScene as createSceneMazeGenerator } from './sceneMazeGenerator';
 
 const game = new ex.Engine({
-    width: 800,
+    width: 1024,
     height: 600,
 });
 
