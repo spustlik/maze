@@ -79,4 +79,22 @@ export class Maze {
         }
         return r;
     }
+    save() {
+        var lines = this.dump();
+        return `# ${this.Width} x ${this.Height}\n`
+            + lines.join('\n');
+    }
+    static read(s: string): Maze {
+        var lines = s.split('\n');
+        lines = lines.filter(l => !l.startsWith('#'));
+        var r = new Maze(lines[0].length, lines.length);
+        for (var y = 0; y < r.Height; y++) {
+            for (var x = 0; x < r.Width; x++) {
+                var c = lines[x + y * r.Width];
+                if (c != ' ')
+                    r.Set({ x, y }, Number(c));
+            }
+        }
+        return r;
+    }
 }

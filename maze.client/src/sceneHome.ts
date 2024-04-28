@@ -1,24 +1,61 @@
 import * as ex from 'excalibur';
-import { createScene as createSceneBreakout } from './sceneBreakout';
-import { createScene as createSceneMazeGenerator } from './sceneMazeGenerator';
+import { createBreakoutScene } from './sceneBreakout';
+import { createMazeGeneratorScene } from './sceneMazeGenerator';
+import { createMazeScene } from './sceneMaze';
 import { createButton } from './ui';
 
 
-export function createScene(game: ex.Engine) {
-    const homeScene = new ex.Scene();
-    var scenes = [
-        { key: 'breakout', title: 'Breakout', create: () => createSceneBreakout() },
-        { key: 'mazegen', title: 'Maze generator', create: () => createSceneMazeGenerator() },
+type SceneDef = {
+    key: string,
+    title: string,
+    create: () => ex.Scene
+};
+export class HomeScene extends ex.Scene {
+    scenes :SceneDef[] = [
+        { key: 'breakout', title: 'Breakout', create: () => createBreakoutScene() },
+        { key: 'mazegen', title: 'Maze generator', create: () => createMazeGeneratorScene() },
+        { key: 'maze', title: 'Maze', create: () => createMazeScene() },
     ];
-    for (var i = 0; i < scenes.length; i++) {
-        const s = scenes[i];
-        const btn = createButton(ex.vec(20, 40 + i * 80), s.title, () => {
-            const instance = s.create();
-            game.addScene(s.key, instance);
-            game.goToScene(s.key);
-        });
-        homeScene.add(btn);
+
+    constructor() {
+        super();
     }
+
+    onInitialize(game:ex.Engine) {
+        super.onInitialize(game);
+        for (var i = 0; i < this.scenes.length; i++) {
+            const def = this.scenes[i];
+            const btn = createButton(def.title, {
+                pos: ex.vec(20, 40 + i * 80),
+                click: () => {
+                    if (!game.scenes[def.key]) {
+                        var s = this.createScene(game, def);
+                    }
+                    game.goToScene(def.key);
+                }
+            });
+            this.add(btn);
+        }
+    }
+
+    createScene(game:ex.Engine, s:SceneDef) {
+        const instance = s.create();
+
+        var homeBtn = createButton('X', {
+            pos: ex.vec(5, 5),
+            click: () => {
+                game.goToScene('root');
+            },
+            width: 40,
+            height: 40
+        });
+        instance.add(homeBtn);
+
+        game.addScene(s.key, instance);
+    }
+}
+export function createScene(game: ex.Engine) {
+    const homeScene = new HomeScene();
     game.addScene('root', homeScene);
     return homeScene;
 }

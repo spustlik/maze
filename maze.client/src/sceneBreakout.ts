@@ -7,7 +7,7 @@ import {
     vec,
 } from "excalibur";
 
-export function createScene() {
+export function createBreakoutScene() {
 
     const scene = new Scene();
     const HEIGHT = 600;

@@ -4,7 +4,7 @@ import { MazeRaster } from './MazeRaster';
 import { MazeGenerator } from './MazeGenerator';
 import { generateRandomSeed } from './RandomGenerator';
 
-export function createScene() {
+export function createMazeGeneratorScene() {
     const scene = new ex.Scene();
     const HEIGHT = 600;
     const WIDTH = 800;
@@ -31,7 +31,8 @@ export function createScene() {
         while (generator.NextStep()) { }
         console.log('generated', (new Date()).getTime() - start.getTime());
         mazer.rasterize();
-    } else {
+        console.log('result', maze.save());
+    } else {    
         //SLOW: animated
         var timer = new ex.Timer({ interval: 0, repeats: true });
         timer.on(() => {
