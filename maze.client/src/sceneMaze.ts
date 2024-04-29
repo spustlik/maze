@@ -27,17 +27,17 @@ export class MazeScene extends ex.Scene {
     }
     onInitialize(game: ex.Engine) {
         super.onInitialize(game);
-        //const maze = Maze.read(this.resources.Maze1.data);
-        const maze = Maze.read(this.resources.MazeTest.data);
+        const maze = Maze.read(this.resources.Maze1.data);
+        //const maze = Maze.read(this.resources.MazeTest.data);
         this.addPixelHelper(maze);
         this.isoMap = new ex.IsometricMap({
             pos: ex.vec(game.drawWidth / 2, 20),
             tileWidth: 100,
-            tileHeight: 51,
+            tileHeight: 50,
             columns: maze.Width,
             rows: maze.Height
         });
-        //this.isoMap.transform.scale = ex.vec(0.5, 0.5);
+        this.isoMap.transform.scale = ex.vec(0.5, 0.5);
 
         this.add(this.isoMap);
         //this.simpleTile(maze);
@@ -55,27 +55,30 @@ export class MazeScene extends ex.Scene {
             //     [4]
             if (s.startsWith("0"))
                 return spriteSheet.getSprite(0, 13);
+            s = s.substring(1);
             var map = {
                 //zatacky
-                "10101": 28,
-                "11010": 25,
-                "10110": 23,
-                "11001": 27,
+                "0101": 28,
+                "1010": 25,
+                "0110": 23,
+                "1001": 27,
                 //odbocky
-                "10111": 1,
-                "11110": 2,
-                "11101": 4,
-                "11011": 3,
+                "0111": 1,
+                "1110": 2,
+                "1101": 4,
+                "1011": 3,
                 //rovne
-                "11100": 26,
-                "10011": 24,
+                "1100": 26,
+                "0011": 24,
                 //krizovatka
-                "11111": 0,
+                "1111": 0,
                 //slepka
-                "11000": 6,
-                "10100": 7,
-                "10010": 5,
-                "10001": 8,
+                "1000": 6,
+                "0100": 7,
+                "0010": 5,
+                "0001": 8,
+                //samostatna
+                "0000": 22
             }
             if (map[s]!=undefined)
                 return spriteSheet.getSprite(0, map[s]);
