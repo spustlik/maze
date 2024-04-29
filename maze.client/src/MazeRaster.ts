@@ -6,6 +6,7 @@ export class MazeRaster extends ex.Raster {
         super();
         this.width = maze.Width * cellSize;
         this.height = maze.Height * cellSize;
+        this.opacity = 0.6;
 
     }
     clone(): ex.Graphic {
@@ -20,6 +21,8 @@ export class MazeRaster extends ex.Raster {
                     ctx.fillStyle = 'green';
                 else if (v == MazeCell.WALL)
                     ctx.fillStyle = 'black';
+                else if (v == MazeCell.UNBREAKABLE)
+                    ctx.fillStyle = 'red';
                 else
                     ctx.fillStyle = 'orange';
                 ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);

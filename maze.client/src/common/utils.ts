@@ -6,3 +6,7 @@ export function sum<T>(data: T[], selector: (x: T)=> number){
     }
     return r;
 }
+
+export function replaceAll(s: string, find: string, replace: string) {
+    return s.replace(new RegExp(find, 'g'), replace);
+}

@@ -1,4 +1,4 @@
-import { ICoordinates } from "./common/Point";
+import { ICoordinates, IRect } from "./common/Point";
 
 function trunc(c: ICoordinates): ICoordinates {
     return { x: Math.trunc(c.x), y: Math.trunc(c.y) };
@@ -9,7 +9,8 @@ export type TMazeCell = number;
 export const MazeCell = {
     WALL: 0,
     EMPTY: null,
-    VISITED: 1
+    VISITED: 1,
+    UNBREAKABLE: 2
 }
 export class Maze {
     private data: TMazeCell[];
@@ -42,9 +43,9 @@ export class Maze {
         this.DrawVLine({ x: 0, y: 0 }, v);
         this.DrawVLine({ x: this.Width - 1, y: 0 }, v);
     }
-    public DrawFillRect(s: ICoordinates, e: ICoordinates, v: TMazeCell = MazeCell.WALL) {
-        for (var y = s.y; y < e.y; y++) {
-            this.DrawHLine({ x: s.x, y }, v, e.x - s.x);
+    public DrawFillRect(r:IRect, v: TMazeCell = MazeCell.WALL) {
+        for (var y = r.y; y < r.y+r.h; y++) {
+            this.DrawHLine({ x: r.x, y }, v, r.w);
         }
     }
     public DrawHLine(s: ICoordinates, v: TMazeCell = MazeCell.WALL, width?: number) {
