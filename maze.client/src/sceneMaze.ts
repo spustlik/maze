@@ -13,10 +13,19 @@ class SceneResources {
     MazeTest2 = new StringSource("src/assets/mazeTest2.txt")
 }
 
-class Batman extends ex.Actor {
-    sheet: ex.SpriteSheet;
-    anims: ex.Animation[];
-    constructor(sprite: ex.ImageSource) {
+type SpriteGrid = {
+    columns: number
+    rows: number
+    spriteWidth: number
+    spriteHeight: number
+}
+class IsoActor extends ex.Actor {
+    protected sheet: ex.SpriteSheet;
+    protected anims: ex.Animation[];
+    public tilepos = ex.vec(0, 0);
+    public zoom = 2;
+    public moveSpeed = 100;
+    constructor(sprite: ex.ImageSource, spriteGrid: SpriteGrid) {
         super({
             x: 20, y: 20,
             width: 24, height: 24,
@@ -24,26 +33,44 @@ class Batman extends ex.Actor {
         });
         this.sheet = ex.SpriteSheet.fromImageSource({
             image: sprite,
-            grid: { columns: 1, rows: 8, spriteWidth: 24, spriteHeight: 32 },
+            grid: spriteGrid,
         });
+        this.anims = [
+            ex.Animation.fromSpriteSheet(this.sheet, [0], 200, ex.AnimationStrategy.Loop),
+        ];
+    }
+    scaleFlipX(flip: boolean) {
+        if (flip)
+            this.scale = ex.vec(-this.zoom, this.zoom);
+        else
+            this.scale = ex.vec(this.zoom, this.zoom);
+    }
+}
+
+class Batman extends IsoActor {
+    constructor(sprite: ex.ImageSource) {
+        super(sprite, { columns: 1, rows: 8, spriteWidth: 24, spriteHeight: 32 });
         this.anims = [
             ex.Animation.fromSpriteSheet(this.sheet, [1, 2], 200, ex.AnimationStrategy.Loop),
             ex.Animation.fromSpriteSheet(this.sheet, [3, 4], 200, ex.AnimationStrategy.Loop),
-            ex.Animation.fromSpriteSheet(this.sheet, [0, 8], 200, ex.AnimationStrategy.Loop),
+            //ex.Animation.fromSpriteSheet(this.sheet, [0, 7, 0, 0, 0, 0, 0, 7, 0, 7, 0], 500, ex.AnimationStrategy.Loop),
+            new ex.Animation({
+                strategy: ex.AnimationStrategy.Loop,
+                frameDuration: 1000,
+                frames: [0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(f => ({ graphic: this.sheet.getSprite(0, f) }))
+            })
         ];
+        this.moveSpeed = 150;
     }
-
-    public tilepos = ex.vec(0, 0);
-    public zoom = 2;
 
     public moveToIso(isoMap: ex.IsometricMap, rx: number, ry: number) {
         var newpos = this.tilepos.add(ex.vec(rx, ry));
         this.tilepos = newpos;
         //console.log('moving', rx, ry, this.tilepos);
         var pt = isoMap.tileToWorld(this.tilepos);
-        let SPEED = 100;
+        let speed = this.moveSpeed;
         if (rx == 0 && ry == 0)
-            SPEED = Number.MAX_SAFE_INTEGER;
+            speed = Number.MAX_SAFE_INTEGER;
         this.actions
             .callMethod(() => {
                 if (rx == 1 || ry == 1) {
@@ -53,16 +80,18 @@ class Batman extends ex.Actor {
                 }
                 this.scaleFlipX((rx == 0 && ry == 1) || (rx == 0 && ry == -1));
             })
-            .moveTo(pt, SPEED)
+            .moveTo(pt, speed)
             .callMethod(() => {
-                //console.log(`move to ${newpos} done, current:${this.tilepos}`);
-            });
+                this.onMoveDone();
+            })
     }
-    scaleFlipX(flip: boolean) {
-        if (flip)
-            this.scale = ex.vec(-this.zoom, this.zoom);
-        else
-            this.scale = ex.vec(this.zoom, this.zoom);
+    onMoveDone() {
+        setTimeout(() => {
+            console.log(`all is done ${this.actions.getQueue().isComplete()}`, this.actions.getQueue());
+            if (this.actions.getQueue().isComplete) {
+                this.graphics.use(this.anims[2]);
+            }
+        }, 0);
     }
     update(g: ex.Engine, delta) {
         super.update(g, delta);
@@ -117,10 +146,10 @@ export class MazeScene extends ex.Scene {
         if (game.input.keyboard.wasPressed(ex.Keys.D))
             return this.moveBatman(0, -1);
 
-    //    if (game.input.keyboard.wasPressed(ex.Keys.Digit1))
-    //        return this.batman.scaleFlipX(true);
-    //    if (game.input.keyboard.wasPressed(ex.Keys.Digit2))
-    //        return this.batman.scaleFlipX(false);
+        //    if (game.input.keyboard.wasPressed(ex.Keys.Digit1))
+        //        return this.batman.scaleFlipX(true);
+        //    if (game.input.keyboard.wasPressed(ex.Keys.Digit2))
+        //        return this.batman.scaleFlipX(false);
     }
     moveBatman(x: number, y: number) {
         this.batman.moveToIso(this.isoMap, x, y);
