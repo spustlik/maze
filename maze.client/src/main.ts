@@ -1,6 +1,18 @@
 import * as ex from 'excalibur';
 import { createScene  as createSceneHome } from './sceneHome';
-import { createMazeGeneratorScene as createSceneMazeGenerator } from './sceneMazeGenerator';
+
+function acquireLog() {
+    var original = console.log;
+    var ele = document.getElementById('log');
+    console.log = (s, ...args) => {
+        original(s, ...args);
+        if (args && args.length > 0) {
+            s += ' ' + args.join(', ');
+        }
+        ele.innerText += s+'\n';
+    }
+
+}
 
 const game = new ex.Engine({
     width: 1024,
@@ -10,8 +22,6 @@ const game = new ex.Engine({
 const home = createSceneHome(game);
 game.addScene('root', home);
 
-//const sg = createSceneMazeGenerator();
-//game.addScene('root', sg);
-
+acquireLog();
 game.start();
 

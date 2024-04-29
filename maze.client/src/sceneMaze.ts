@@ -13,10 +13,66 @@ class SceneResources {
     MazeTest2 = new StringSource("src/assets/mazeTest2.txt")
 }
 
+class Batman extends ex.Actor {
+    sheet: ex.SpriteSheet;
+    anims: ex.Animation[];
+    constructor(sprite: ex.ImageSource) {
+        super({
+            x: 20, y: 20,
+            width: 24, height: 24,
+            z: 20000
+        });
+        this.sheet = ex.SpriteSheet.fromImageSource({
+            image: sprite,
+            grid: { columns: 1, rows: 8, spriteWidth: 24, spriteHeight: 32 },
+        });
+        this.anims = [
+            ex.Animation.fromSpriteSheet(this.sheet, [1, 2], 200, ex.AnimationStrategy.Loop),
+            ex.Animation.fromSpriteSheet(this.sheet, [3, 4], 200, ex.AnimationStrategy.Loop),
+            ex.Animation.fromSpriteSheet(this.sheet, [0, 8], 200, ex.AnimationStrategy.Loop),
+        ];
+    }
+
+    public tilepos = ex.vec(0, 0);
+    public zoom = 2;
+
+    public moveToIso(isoMap: ex.IsometricMap, rx: number, ry: number) {
+        var newpos = this.tilepos.add(ex.vec(rx, ry));
+        this.tilepos = newpos;
+        //console.log('moving', rx, ry, this.tilepos);
+        var pt = isoMap.tileToWorld(this.tilepos);
+        let SPEED = 100;
+        if (rx == 0 && ry == 0)
+            SPEED = Number.MAX_SAFE_INTEGER;
+        this.actions
+            .callMethod(() => {
+                if (rx == 1 || ry == 1) {
+                    this.graphics.use(this.anims[0]);
+                } else {
+                    this.graphics.use(this.anims[1]);
+                }
+                this.scaleFlipX((rx == 0 && ry == 1) || (rx == 0 && ry == -1));
+            })
+            .moveTo(pt, SPEED)
+            .callMethod(() => {
+                //console.log(`move to ${newpos} done, current:${this.tilepos}`);
+            });
+    }
+    scaleFlipX(flip: boolean) {
+        if (flip)
+            this.scale = ex.vec(-this.zoom, this.zoom);
+        else
+            this.scale = ex.vec(this.zoom, this.zoom);
+    }
+    update(g: ex.Engine, delta) {
+        super.update(g, delta);
+    }
+}
+
 export class MazeScene extends ex.Scene {
     isoMap: ex.IsometricMap;
     resources: SceneResources;
-    batman: ex.Actor;
+    batman: Batman;
     constructor() {
         super();
     }
@@ -45,27 +101,32 @@ export class MazeScene extends ex.Scene {
         this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
 
         this.add(this.isoMap);
-        //this.simpleTile(maze);
         this.roadsTile(maze);
         this.addBatman();
 
-        var pt = this.isoMap.tileToWorld(ex.vec(1, 1));
-        console.log('pt', pt);
-        this.batman.pos = pt;
+        this.batman.moveToIso(this.isoMap, 0, 0);
+    }
+    update(game: ex.Engine, delta) {
+        super.update(game, delta);
+        if (game.input.keyboard.wasPressed(ex.Keys.W))
+            return this.moveBatman(-1, 0);
+        if (game.input.keyboard.wasPressed(ex.Keys.A))
+            return this.moveBatman(0, 1);
+        if (game.input.keyboard.wasPressed(ex.Keys.S))
+            return this.moveBatman(1, 0);
+        if (game.input.keyboard.wasPressed(ex.Keys.D))
+            return this.moveBatman(0, -1);
+
+    //    if (game.input.keyboard.wasPressed(ex.Keys.Digit1))
+    //        return this.batman.scaleFlipX(true);
+    //    if (game.input.keyboard.wasPressed(ex.Keys.Digit2))
+    //        return this.batman.scaleFlipX(false);
+    }
+    moveBatman(x: number, y: number) {
+        this.batman.moveToIso(this.isoMap, x, y);
     }
     addBatman() {
-        var batmanSheet = ex.SpriteSheet.fromImageSource({
-            image: this.resources.Batman,
-            grid: { columns: 1, rows: 8, spriteWidth: 24, spriteHeight: 32 },
-        });
-        this.batman = new ex.Actor({
-            x: 20, y: 20,
-            width: 24, height: 24,
-            scale: ex.vec(2, 2),
-            z:999
-        });
-        var batmanAnim = ex.Animation.fromSpriteSheet(batmanSheet, [1, 2], 200, ex.AnimationStrategy.Loop)
-        this.batman.graphics.use(batmanAnim);
+        this.batman = new Batman(this.resources.Batman);
         this.add(this.batman);
         return this.batman;
     }
