@@ -7,11 +7,9 @@ import {
     vec,
 } from "excalibur";
 
-export function createBreakoutScene() {
+export function createBreakoutScene(game: ex.Engine) {
 
     const scene = new Scene();
-    const HEIGHT = 600;
-    const WIDTH = 800;
 
     // start-snippet{create-paddle}
     // Create an actor with x position of 150px,
@@ -19,7 +17,7 @@ export function createBreakoutScene() {
     // width of 200px, height and a height of 20px
     const paddle = new Actor({
         x: 150,
-        y: HEIGHT - 40,
+        y: game.drawHeight - 40,
         width: 200,
         height: 20,
         // Let's give it some color with one of the predefined
@@ -33,9 +31,11 @@ export function createBreakoutScene() {
 
     scene.add(paddle);
 
-    scene.input.pointers.primary.on("move", (evt) => {
-        paddle.pos.x = evt.worldPos.x;
-    });
+    setTimeout(() => {
+        scene.input.pointers.primary.on("move", (evt) => {
+            paddle.pos.x = evt.worldPos.x;
+        });
+    }, 10);
 
     const ball = new Actor({
         x: 100,
@@ -47,7 +47,7 @@ export function createBreakoutScene() {
     });
 
     // Start the serve after a second
-    const ballSpeed = vec(100, 100);
+    const ballSpeed = vec(250, 250);
     setTimeout(() => {
         // Set the velocity in pixels per second
         ball.vel = ballSpeed;
@@ -76,7 +76,7 @@ export function createBreakoutScene() {
 
         // If the ball collides with the right side
         // of the screen reverse the x velocity
-        if (ball.pos.x + ball.width / 2 > WIDTH) {
+        if (ball.pos.x + ball.width / 2 > game.drawWidth) {
             ball.vel.x = ballSpeed.x * -1;
         }
 
@@ -101,7 +101,7 @@ export function createBreakoutScene() {
     const brickColor = [Color.Violet, Color.Orange, Color.Yellow];
 
     // Individual brick width with padding factored in
-    const brickWidth = WIDTH / columns - padding - padding / columns; // px
+    const brickWidth = game.drawWidth / columns - padding - padding / columns; // px
     const brickHeight = 30; // px
     const bricks: Actor[] = [];
     for (let j = 0; j < rows; j++) {

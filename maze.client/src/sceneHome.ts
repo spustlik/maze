@@ -8,11 +8,11 @@ import { createButton } from './extra/ui';
 type SceneDef = {
     key: string,
     title: string,
-    create: () => ex.Scene
+    create: (game:ex.Engine) => ex.Scene
 };
 export class HomeScene extends ex.Scene {
     scenes: SceneDef[] = [
-        { key: 'breakout', title: 'Breakout', create: () => createBreakoutScene() },
+        { key: 'breakout', title: 'Breakout', create: (g) => createBreakoutScene(g) },
         { key: 'mazegen', title: 'Maze generator', create: () => createMazeGeneratorScene() },
         { key: 'maze', title: 'Maze', create: () => createMazeScene() },
     ];
@@ -53,7 +53,7 @@ export class HomeScene extends ex.Scene {
         window.location.hash = def.key;
     }
     createScene(game: ex.Engine, s: SceneDef) {
-        const instance = s.create();
+        const instance = s.create(game);
 
         var homeBtn = createButton('X', {
             pos: ex.vec(game.drawWidth-45, 5),
