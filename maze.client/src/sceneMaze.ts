@@ -74,7 +74,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         if (game.input.keyboard.wasPressed(ex.Keys.NumMultiply)) {
             console.log('offset ' + this.batman.offset);
         }
-        this.mazeMap.rasterize();// dirty = true; update();
+        this.mazeMap.rasterize();
     }
     roadsTile(maze: Maze) {
         var isoHelp = new IsoHelper(this.isoMap);
