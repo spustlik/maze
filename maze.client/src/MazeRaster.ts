@@ -10,7 +10,7 @@ abstract class CellRaster extends ex.Raster {
     }
     clone(): ex.Graphic { return null; }
     execute(ctx: CanvasRenderingContext2D): void {
-        console.log('execute');
+        //console.log('execute');
         for (var y = 0; y < this.c_height; y++) {
             for (var x = 0; x < this.c_width; x++) {
                 var c = this.getPixelStyle({ x, y });

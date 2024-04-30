@@ -12,6 +12,7 @@ import { IsoHelper, IsoTileKind } from './batman/IsoHelper';
 export class MazeScene extends ex.Scene implements IIsoScene {
     isoMap: ex.IsometricMap;
     batman: Batman;
+    mazeMap: MazeRaster;
     constructor() {
         super();
     }
@@ -24,7 +25,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         super.onInitialize(game);
         //const maze = Maze.read(this.resources.Maze1.data);
         const maze = Maze.read(batmanResources.MazeTest2.data);
-        this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
+        this.mazeMap = this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
 
         this.isoMap = new ex.IsometricMap({
             pos: ex.vec(game.drawWidth / 2, 20),
@@ -73,6 +74,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         if (game.input.keyboard.wasPressed(ex.Keys.NumMultiply)) {
             console.log('offset ' + this.batman.offset);
         }
+        this.mazeMap.rasterize();// dirty = true; update();
     }
     roadsTile(maze: Maze) {
         var isoHelp = new IsoHelper(this.isoMap);
@@ -111,7 +113,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         });
         mazeActor.graphics.use(r);
         this.add(mazeActor);
-        return mazeActor;
+        return r;
     }
 
 }
