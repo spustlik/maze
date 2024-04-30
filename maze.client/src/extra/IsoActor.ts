@@ -48,13 +48,13 @@ export class IsoActor extends ex.Actor {
                 });
             });
     }
-    setMoving(rx: number, ry: number) {
-        if (rx == 1 || ry == 1) {
+    setMoving(rx: number, ry: number) {if (rx == 1 || ry == 1) {
             this.graphics.use(this.anims[0]);
         } else {
             this.graphics.use(this.anims[1]);
         }
         this.scaleFlipX((rx == 0 && ry == 1) || (rx == 0 && ry == -1));
+        
     }
     onMoveDone() {
     }

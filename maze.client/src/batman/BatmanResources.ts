@@ -50,7 +50,7 @@ export const batmanData = new class BatmanData {
             case MobType.Armchair: return [get([8, 9]), get([10, 11])];
             case MobType.Dog: return [get([12, 13]), get([14, 15])];
             case MobType.Man: return [get([16]), get([17, 18])];
-            case MobType.Head: return [get([19]), get([20])];
+            case MobType.PirateHead: return [get([19]), get([20])];
             default: throw new Error(`Unknown mob type ${mobtype}`);
         }
 
@@ -60,6 +60,10 @@ export const batmanData = new class BatmanData {
         //     [3]
         // [1] [0] [2]
         //     [4]
+
+        //buildings/UNBREAKABLE
+        //if (s.startsWith("2"))
+        //    return this.Roads_Sheet.getSprite(0, 13);
 
         ///WARNING !!!
         s = replaceAll(s, "2", "1");

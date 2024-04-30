@@ -24,6 +24,8 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         super.onInitialize(game);
         //const maze = Maze.read(this.resources.Maze1.data);
         const maze = Maze.read(batmanResources.MazeTest2.data);
+        this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
+
         this.isoMap = new ex.IsometricMap({
             pos: ex.vec(game.drawWidth / 2, 20),
             tileWidth: 100,
@@ -34,8 +36,6 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         });
         //this.isoMap.transform.scale = ex.vec(0.5, 0.5);
 
-        this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
-
         this.add(this.isoMap);
         this.roadsTile(maze);
         //this.simpleTile(maze);
@@ -43,6 +43,8 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         this.batman = new Batman();
         this.add(this.batman);
         this.batman.moveToIso(0, 0);
+        this.batman.moveToIso(1, 1);
+
 
         var rnd = new ex.Random(1234);
         for (var i = 0; i <= 5; i++) {
@@ -100,7 +102,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         }
     }
     addMazeMap(maze: Maze) {
-        var r = new MazeRaster(maze, 4);
+        var r = new MazeRaster(maze, 4, this);
         const mazeActor = new ex.Actor({
             pos: ex.vec(5, 5),
             anchor: ex.vec(0, 0),

@@ -10,7 +10,7 @@ export enum MobType {
     Armchair = 2,
     Dog = 3,
     Man = 4,
-    Head = 5
+    PirateHead = 5
 }
 export class BatmanMob extends IsoActor {
     mobtype: number;

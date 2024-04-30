@@ -28,7 +28,9 @@ export class Point implements ICoordinates {
 export function addPoint(pt: ICoordinates, add: ICoordinates): ICoordinates {
     return new Point(pt.x + add.x, pt.y + add.y);
 }
-
+export function isSamePoint(p1: ICoordinates, p2: ICoordinates) {
+    return p1.x == p2.x && p1.y == p2.y;
+}
 //warn: possible conflict with Excalibur Direction
 //warn: order of is importyant, see other functions
 export const enum PointDirection {
