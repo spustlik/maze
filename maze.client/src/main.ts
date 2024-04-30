@@ -2,14 +2,33 @@ import * as ex from 'excalibur';
 import { createScene  as createSceneHome } from './sceneHome';
 
 function acquireLog() {
-    var original = console.log;
     var ele = document.getElementById('log');
-    console.log = (s, ...args) => {
-        original(s, ...args);
-        if (args && args.length > 0) {
-            s += ' ' + args.join(', ');
-        }
-        ele.innerText += s+'\n';
+
+    {
+        var original = console.log;
+        console.log = (s, ...args) => {
+            original(s, ...args);
+            if (args && args.length > 0) {
+                s += ' ' + args.join(', ');
+            }
+            var line = document.createElement("div");
+            line.innerText = s;
+            ele.append(line);
+        };
+    }
+    {
+        var original = console.error;
+        console.error = (s, ...args) => {
+            original(s, ...args);
+            if (args && args.length > 0) {
+                s += ' ' + args.join(', ');
+            }
+            var line = document.createElement("div");
+            line.style.color = 'red';
+            line.style.fontWeight = 'bold';
+            line.innerText = s;
+            ele.append(line);
+        };
     }
 
 }

@@ -29,7 +29,7 @@ export function addPoint(pt: ICoordinates, add: ICoordinates): ICoordinates {
     return new Point(pt.x + add.x, pt.y + add.y);
 }
 
-//warn: possible conflict with Excaibur Direction
+//warn: possible conflict with Excalibur Direction
 //warn: order of is importyant, see other functions
 export const enum PointDirection {
     Left = 0,
@@ -38,6 +38,15 @@ export const enum PointDirection {
     Down = 3
 }
 
+export function getDirectionVec(d: PointDirection) {
+    const dirs: ICoordinates[] = [
+        { x: -1, y: 0 },
+        { x: 1, y: 0 },
+        { x: 0, y: -1 },
+        { x: 0, y: 1 }
+    ];
+    return dirs[d];
+}
 /**
  * @returns 4 points around [c], [offset] can be specified, it is not controlling bounds
  */
