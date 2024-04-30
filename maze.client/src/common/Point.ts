@@ -28,6 +28,9 @@ export class Point implements ICoordinates {
 export function addPoint(pt: ICoordinates, add: ICoordinates): ICoordinates {
     return new Point(pt.x + add.x, pt.y + add.y);
 }
+export function subtractPoint(pt: ICoordinates, sub: ICoordinates): ICoordinates {
+    return new Point(pt.x - sub.x, pt.y - sub.y);
+}
 export function isSamePoint(p1: ICoordinates, p2: ICoordinates) {
     return p1.x == p2.x && p1.y == p2.y;
 }
@@ -49,6 +52,13 @@ export function getDirectionVec(d: PointDirection) {
     ];
     return dirs[d];
 }
+
+export function getPointsDirection(src: ICoordinates, dst: ICoordinates) {
+    var rx = dst.x - src.x;
+    var ry = dst.y - src.y;
+
+}
+
 /**
  * @returns 4 points around [c], [offset] can be specified, it is not controlling bounds
  */

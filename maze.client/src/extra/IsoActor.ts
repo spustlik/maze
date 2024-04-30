@@ -16,7 +16,7 @@ export class IsoActor extends ex.Actor {
         super({
             x: 20, y: 20,
             width: 24, height: 24,
-            z: 20000            
+            z: 20000
         });
         this.sheet = sheet;
         this.anims = [
@@ -48,13 +48,14 @@ export class IsoActor extends ex.Actor {
                 });
             });
     }
-    setMoving(rx: number, ry: number) {if (rx == 1 || ry == 1) {
+    setMoving(rx: number, ry: number) {
+        if (rx > 0 || ry > 0) {
             this.graphics.use(this.anims[0]);
         } else {
             this.graphics.use(this.anims[1]);
         }
-        this.scaleFlipX((rx == 0 && ry == 1) || (rx == 0 && ry == -1));
-        
+        this.scaleFlipX((rx == 0 && ry > 0) || (rx == 0 && ry < 0));
+
     }
     onMoveDone() {
     }

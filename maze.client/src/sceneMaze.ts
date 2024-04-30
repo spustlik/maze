@@ -1,7 +1,7 @@
 import * as ex from 'excalibur';
 import { Maze, MazeCell } from './Maze';
 import { MazeRaster } from './MazeRaster';
-import { getAroundPoints } from './common/Point';
+import { Point, addPoint, getAroundPoints, getPointsDirection, subtractPoint } from './common/Point';
 import { Batman } from './batman/BatmanActor';
 import { BatmanMob } from './batman/BatmanMobActor';
 import { batmanData, batmanResources } from './batman/BatmanResources';
@@ -27,6 +27,8 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         const maze = Maze.read(batmanResources.MazeTest2.data);
         this.mazeMap = this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
 
+        //game.showDebug(true);
+
         this.isoMap = new ex.IsometricMap({
             pos: ex.vec(game.drawWidth / 2, 20),
             tileWidth: 100,
@@ -34,6 +36,11 @@ export class MazeScene extends ex.Scene implements IIsoScene {
             columns: maze.Width,
             rows: maze.Height,
             //renderFromTopOfGraphic: true
+        });
+        this.isoMap.events.on('pointerdown', (evt: ex.PointerEvent) => {
+            var tile = this.isoMap.getTileByPoint(evt.worldPos);
+            if (tile)
+                this.onTileClicked(tile, Point.From(tile));
         });
         //this.isoMap.transform.scale = ex.vec(0.5, 0.5);
 
@@ -55,6 +62,12 @@ export class MazeScene extends ex.Scene implements IIsoScene {
             this.add(mob);
             mob.moveToIso(0, 0);
         }
+    }
+    onTileClicked(tile: ex.IsometricTile, tilepos: Point) {
+        console.log('tile clicked', tilepos);
+        //var dir = getPointsDirection(this.batman.tilepos, tilepos);
+        var ofs = subtractPoint(tilepos, this.batman.tilepos);
+        this.batman.moveToIso(ofs.x, ofs.y);
     }
     update(game: ex.Engine, delta) {
         super.update(game, delta);

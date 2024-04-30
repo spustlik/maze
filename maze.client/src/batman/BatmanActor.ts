@@ -20,7 +20,7 @@ export class Batman extends IsoActor {
     }
     moveToIso(rx: number, ry: number) {
         super.moveToIso(rx, ry);
-        console.log(`moving #${this.id} to ${this.tilepos} (r:${rx},${ry})`); 3
+        console.log(`moving #${this.id} to ${this.tilepos} (r:${rx},${ry})`); 
     }
     onMoveDone() {
         if (!this.isMoving) {
