@@ -42,8 +42,10 @@ export class IsoActor extends ex.Actor {
             .callMethod(() => this.setMoving(rx, ry))
             .moveTo(pt, speed)
             .callMethod(() => {
-                this.isMoving = false;
-                this.onMoveDone();
+                setTimeout(() => {
+                    this.isMoving = !this.actions.getQueue().isComplete();
+                    this.onMoveDone();
+                });
             });
     }
     setMoving(rx: number, ry: number) {

@@ -32,12 +32,14 @@ export class MazeScene extends ex.Scene implements IIsoScene {
             rows: maze.Height,
             //renderFromTopOfGraphic: true
         });
-        this.isoMap.transform.scale = ex.vec(0.5, 0.5);
+        //this.isoMap.transform.scale = ex.vec(0.5, 0.5);
 
         this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
 
         this.add(this.isoMap);
         this.roadsTile(maze);
+        //this.simpleTile(maze);
+
         this.batman = new Batman();
         this.add(this.batman);
         this.batman.moveToIso(0, 0);
