@@ -3,6 +3,7 @@ import * as ex from 'excalibur';
 
 export const uiResources = new class UiResources {
     button = new ex.ImageSource("src/assets/button.png")
+    bg = new ex.ImageSource("src/assets/homebg.jpeg")
 }
 
 export const uiResourceData = new class UiResourceData {

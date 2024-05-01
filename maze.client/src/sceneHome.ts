@@ -34,14 +34,14 @@ export class HomeScene extends ex.Scene {
         loadResources(loader, uiResources);
         await game.start(loader);
 
+        var bg_a = new ex.Actor({ x: 0, y: 0, anchor: ex.vec(0, 0) });
+        var ratio = uiResources.bg.image.width / uiResources.bg.image.height;
+        var bg_g = new ex.Sprite({ image: uiResources.bg, destSize: { width: game.drawWidth, height: game.drawWidth * ratio } });
+        bg_a.graphics.use(bg_g);
+        this.add(bg_a);
+
         for (var i = 0; i < this.scenes.length; i++) {
             const def = this.scenes[i];
-
-            //const btn = createButton(def.title, {
-            //    pos: ex.vec(20, 40 + i * 80),
-            //    click: () => this.gotoScene(game, def)
-            //});
-            //this.add(btn);
 
             const btn2 = createImgButton(def.title, {
                 pos: ex.vec(20, 60 + i * 120),
@@ -50,7 +50,7 @@ export class HomeScene extends ex.Scene {
                 colorHightlightFg: ex.Color.White,
                 click: () => this.gotoScene(game, def)
             });
-            console.log('button created', btn2.height, def.title);
+            //console.log('button created', btn2.height, def.title);
             this.add(btn2);
         }
 
