@@ -42,8 +42,8 @@ export class MazeRaster1 extends CellRaster {
 export class MazeRaster extends MazeRaster1 {
     constructor(
         public maze: Maze,
-        cellSize: number = 6,
-        private scene: ex.Scene
+        public scene: ex.Scene,
+        cellSize: number = 6
     ) {
         super(maze, cellSize);
         this.opacity = 1;

@@ -20,13 +20,6 @@ ISOMETRIC VIEW
 
 */
 export const batmanData = new class BatmanData {
-    load(loader: ex.DefaultLoader) {
-        var o = batmanResources;
-        for (var r in o) {
-            loader.addResource(o[r]);
-        }
-    }
-
     Roads_Sheet = ex.SpriteSheet.fromImageSource({
         image: batmanResources.Roads,
         grid: { columns: 1, rows: 29, spriteWidth: 100, spriteHeight: 65 }

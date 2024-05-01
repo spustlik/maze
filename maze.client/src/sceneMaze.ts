@@ -1,12 +1,13 @@
 import * as ex from 'excalibur';
 import { Maze, MazeCell } from './Maze';
 import { MazeRaster } from './MazeRaster';
-import { Point, addPoint, getAroundPoints, getPointsDirection, subtractPoint } from './common/Point';
+import { Point, getAroundPoints, subtractPoint } from './common/Point';
 import { Batman } from './batman/BatmanActor';
 import { BatmanMob } from './batman/BatmanMobActor';
 import { batmanData, batmanResources } from './batman/BatmanResources';
 import { IIsoScene } from './extra/IsoActor';
 import { IsoHelper, IsoTileKind } from './batman/IsoHelper';
+import { loadResources } from './extra/extra';
 
 
 export class MazeScene extends ex.Scene implements IIsoScene {
@@ -18,8 +19,9 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     }
 
     onPreLoad(loader: ex.DefaultLoader) {
+        console.log('onPreload-maze');
         super.onPreLoad(loader);
-        batmanData.load(loader);
+        loadResources(loader, batmanResources);
     }
     onInitialize(game: ex.Engine) {
         super.onInitialize(game);
@@ -117,7 +119,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         }
     }
     addMazeMap(maze: Maze) {
-        var r = new MazeRaster(maze, 4, this);
+        var r = new MazeRaster(maze, this, 4);
         const mazeActor = new ex.Actor({
             pos: ex.vec(5, 5),
             anchor: ex.vec(0, 0),

@@ -2,10 +2,7 @@ import * as ex from 'excalibur';
 import { createBreakoutScene } from './sceneBreakout';
 import { createMazeGeneratorScene } from './sceneMazeGenerator';
 import { createMazeScene } from './sceneMaze';
-import { createButton, createImgButton } from './extra/ui';
-//import { loadResources } from './extra/extra';
-//import { uiResources } from './extra/uiResources';
-
+import { createButton } from './extra/ui';
 
 
 type SceneDef = {
@@ -13,7 +10,7 @@ type SceneDef = {
     title: string,
     create: (game:ex.Engine) => ex.Scene
 };
-export class HomeScene extends ex.Scene {
+export class HomeSceneOld extends ex.Scene {
     scenes: SceneDef[] = [
         { key: 'breakout', title: 'Breakout', create: (g) => createBreakoutScene(g) },
         { key: 'mazegen', title: 'Maze generator', create: () => createMazeGeneratorScene() },
@@ -24,52 +21,25 @@ export class HomeScene extends ex.Scene {
         super();
     }
 
-    override onPreLoad(loader: ex.DefaultLoader) {
-        console.log('onPreload-home');
-        super.onPreLoad(loader);
-    //    loadResources(loader, batmanResources);
-    //    loadResources(loader, uiResources);
-    }
-
     onInitialize(game: ex.Engine) {
-        console.log('onInitialize-home');
         super.onInitialize(game);
         for (var i = 0; i < this.scenes.length; i++) {
             const def = this.scenes[i];
-
             const btn = createButton(def.title, {
                 pos: ex.vec(20, 40 + i * 80),
                 click: () => this.gotoScene(game, def)
             });
             this.add(btn);
-
-            //const btn2 = createImgButton(def.title, {
-            //    pos: ex.vec(20, 60 + i * 80),
-            //    click: () => this.gotoScene(game, def)
-            //});
-            //this.add(btn2);
-
         }
-
-        /*
-        var sp = new ex.Actor({ pos: ex.vec(10, 10), name: 'debug sprite' });
-        var spr = batmanResources.Batman.toSprite();// uiResources.button.toSprite();
-        sp.graphics.use(spr);
-        this.add(sp);
-        console.log('sprite', sp.width, sp.height, spr.width, spr.height);
-        */
-    }
-
-    public onActivate(ctx: ex.SceneActivationContext) {
         if (window.location.hash) {
             var s = window.location.hash;
             if (s.startsWith('#'))
                 s = s.substring(1);
-            if (ctx.engine.currentSceneName != s) {
+            if (game.currentSceneName != s) {
                 var found = this.scenes.filter(a => a.key == s)[0];
                 //console.log('init', s, found);
                 if (found) {
-                    this.gotoScene(ctx.engine, found);
+                    this.gotoScene(game, found);
                 }
             }
         }
@@ -77,18 +47,17 @@ export class HomeScene extends ex.Scene {
 
     gotoScene(game: ex.Engine, def: SceneDef) {
         if (!game.scenes[def.key]) {
-            this.createScene(game, def);
+            var s = this.createScene(game, def);
         }
         game.goToScene(def.key);
         window.location.hash = def.key;
     }
-    createScene(game: ex.Engine, def: SceneDef) {
-        const instance = def.create(game);
+    createScene(game: ex.Engine, s: SceneDef) {
+        const instance = s.create(game);
 
         var homeBtn = createButton('X', {
             pos: ex.vec(game.drawWidth-45, 5),
             click: () => {
-                window.location.hash = '';
                 game.goToScene('root');
             },
             width: 40,
@@ -96,11 +65,11 @@ export class HomeScene extends ex.Scene {
         });
         instance.add(homeBtn);
 
-        game.addScene(def.key, instance);
+        game.addScene(s.key, instance);
     }
 }
 export function createScene(game: ex.Engine) {
-    const homeScene = new HomeScene();
+    const homeScene = new HomeSceneOld();
     game.addScene('root', homeScene);
     return homeScene;
 }

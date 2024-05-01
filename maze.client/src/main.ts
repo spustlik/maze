@@ -3,7 +3,6 @@ import { createScene  as createSceneHome } from './sceneHome';
 
 function acquireLog() {
     var ele = document.getElementById('log');
-
     {
         var original = console.log;
         console.log = (s, ...args) => {
@@ -17,9 +16,9 @@ function acquireLog() {
         };
     }
     {
-        var original = console.error;
+        var origErr = console.error;
         console.error = (s, ...args) => {
-            original(s, ...args);
+            origErr(s, ...args);
             if (args && args.length > 0) {
                 s += ' ' + args.join(', ');
             }
@@ -30,7 +29,6 @@ function acquireLog() {
             ele.append(line);
         };
     }
-
 }
 
 const game = new ex.Engine({
@@ -40,6 +38,10 @@ const game = new ex.Engine({
 
 const home = createSceneHome(game);
 game.addScene('root', home);
+
+//game.showDebug(true);
+//game.debug.entity.showAll = true;
+//game.debug.graphics.showAll = true;
 
 acquireLog();
 game.start();

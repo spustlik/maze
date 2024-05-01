@@ -10,7 +10,8 @@ export function createMazeGeneratorScene() {
     const WIDTH = 800;
 
     var maze = new Maze(47, 49);
-    const mazer = new MazeRaster(maze);
+    const mazer = new MazeRaster(maze, scene);
+    console.log('mazerscene', mazer.scene);
     const actor = new ex.Actor({
         pos: ex.vec(WIDTH / 2, HEIGHT / 2),
         width: mazer.width,
