@@ -3,15 +3,15 @@ import { createBreakoutScene } from './sceneBreakout';
 import { createMazeGeneratorScene } from './sceneMazeGenerator';
 import { createMazeScene } from './sceneMaze';
 import { createButton, createImgButton } from './extra/ui';
-//import { loadResources } from './extra/extra';
-//import { uiResources } from './extra/uiResources';
+import { loadResources } from './extra/extra';
+import { uiResources } from './extra/uiResources';
 
 
 
 type SceneDef = {
     key: string,
     title: string,
-    create: (game:ex.Engine) => ex.Scene
+    create: (game: ex.Engine) => ex.Scene
 };
 export class HomeScene extends ex.Scene {
     scenes: SceneDef[] = [
@@ -24,43 +24,41 @@ export class HomeScene extends ex.Scene {
         super();
     }
 
-    override onPreLoad(loader: ex.DefaultLoader) {
-        console.log('onPreload-home');
-        super.onPreLoad(loader);
-    //    loadResources(loader, batmanResources);
-    //    loadResources(loader, uiResources);
-    }
-
-    onInitialize(game: ex.Engine) {
+    async onInitialize(game: ex.Engine) {
         console.log('onInitialize-home');
         super.onInitialize(game);
+
+        //onLoad is not called?!?
+        var loader = new ex.DefaultLoader();
+        console.log('loading res-home');
+        loadResources(loader, uiResources);
+        await game.start(loader);
+
         for (var i = 0; i < this.scenes.length; i++) {
             const def = this.scenes[i];
 
-            const btn = createButton(def.title, {
-                pos: ex.vec(20, 40 + i * 80),
-                click: () => this.gotoScene(game, def)
-            });
-            this.add(btn);
-
-            //const btn2 = createImgButton(def.title, {
-            //    pos: ex.vec(20, 60 + i * 80),
+            //const btn = createButton(def.title, {
+            //    pos: ex.vec(20, 40 + i * 80),
             //    click: () => this.gotoScene(game, def)
             //});
-            //this.add(btn2);
+            //this.add(btn);
 
+            const btn2 = createImgButton(def.title, {
+                pos: ex.vec(20, 60 + i * 120),
+                height: 100,
+                width: 300,
+                colorHightlightFg: ex.Color.White,
+                click: () => this.gotoScene(game, def)
+            });
+            console.log('button created', btn2.height, def.title);
+            this.add(btn2);
         }
 
-        /*
-        var sp = new ex.Actor({ pos: ex.vec(10, 10), name: 'debug sprite' });
-        var spr = batmanResources.Batman.toSprite();// uiResources.button.toSprite();
-        sp.graphics.use(spr);
-        this.add(sp);
-        console.log('sprite', sp.width, sp.height, spr.width, spr.height);
-        */
     }
 
-    public onActivate(ctx: ex.SceneActivationContext) {
+    override onActivate(ctx: ex.SceneActivationContext) {
+        console.log('onActivate-home');
+
         if (window.location.hash) {
             var s = window.location.hash;
             if (s.startsWith('#'))
@@ -70,9 +68,15 @@ export class HomeScene extends ex.Scene {
                 //console.log('init', s, found);
                 if (found) {
                     this.gotoScene(ctx.engine, found);
+                    return;
                 }
             }
         }
+        //var sp = new ex.Actor({ pos: ex.vec(10, 10), name: 'debug sprite' });
+        //var spr = uiResources.button.toSprite();
+        //sp.graphics.use(spr);
+        //this.add(sp);
+        //console.log('sprite', spr.width, spr.height);
     }
 
     gotoScene(game: ex.Engine, def: SceneDef) {
@@ -86,7 +90,7 @@ export class HomeScene extends ex.Scene {
         const instance = def.create(game);
 
         var homeBtn = createButton('X', {
-            pos: ex.vec(game.drawWidth-45, 5),
+            pos: ex.vec(game.drawWidth - 45, 5),
             click: () => {
                 window.location.hash = '';
                 game.goToScene('root');

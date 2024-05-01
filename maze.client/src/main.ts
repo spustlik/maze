@@ -39,9 +39,9 @@ const game = new ex.Engine({
 const home = createSceneHome(game);
 game.addScene('root', home);
 
+game.debug.entity.showAll = true;
+game.debug.graphics.showAll = true;
 //game.showDebug(true);
-//game.debug.entity.showAll = true;
-//game.debug.graphics.showAll = true;
 
 acquireLog();
 game.start();

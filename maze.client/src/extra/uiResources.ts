@@ -8,7 +8,7 @@ export const uiResources = new class UiResources {
 export const uiResourceData = new class UiResourceData {
     getBtnGraphics(width: number, height?: number) {
         const W1 = 39;
-        const H1 = 34;
+        const H1 = 39;
         const w = uiResources.button.width;
         const h = uiResources.button.height;
         const W2 = width - W1 * 2;
@@ -18,7 +18,7 @@ export const uiResourceData = new class UiResourceData {
             new ex.Sprite({ image: uiResources.button, sourceView: { x: 0, y: 0, width: W1, height: H1 } }),
             new ex.Sprite({
                 image: uiResources.button, sourceView: { x: W1, y: 0, width: w - W1 * 2, height: H1 },
-                destSize: { width: W2, height }
+                destSize: { width: W2, height: H1 }
             }),
             new ex.Sprite({ image: uiResources.button, sourceView: { x: w - W1, y: 0, width: W1, height: H1 } }),
 
@@ -38,7 +38,7 @@ export const uiResourceData = new class UiResourceData {
             new ex.Sprite({ image: uiResources.button, sourceView: { x: 0, y: h - H1, width: W1, height: H1 } }),
             new ex.Sprite({
                 image: uiResources.button, sourceView: { x: W1, y: h - H1, width: w - W1 * 2, height: H1 },
-                destSize: { width: W2, height }
+                destSize: { width: W2, height: H1 }
             }),
             new ex.Sprite({ image: uiResources.button, sourceView: { x: w - W1, y: h - H1, width: W1, height: H1 } }),
         ];

@@ -1,5 +1,6 @@
 import * as ex from 'excalibur';
 import { uiResourceData, uiResources } from './uiResources';
+import { title } from 'process';
 
 type ClickEvent = () => void;
 
@@ -65,6 +66,7 @@ export function createImgButton(text: string,
     const btn = new ex.ScreenElement({
         x: args.pos.x,
         y: args.pos.y,
+        name:text
     });
 
     const COLOR_FG = args.colorFg ?? ex.Color.Black;
@@ -81,7 +83,7 @@ export function createImgButton(text: string,
 
     var g = new ex.GraphicsGroup({
         members: members.concat([
-            { graphic: t, offset: ex.vec(10, 10) },
+            { graphic: t, offset: ex.vec(45, sprites[0].height ?? 30) },
         ])
     });
     btn.graphics.add(g);
@@ -91,7 +93,10 @@ export function createImgButton(text: string,
         members: sprites.map((s, i) => ({ graphic: s, offset: ex.vec(10, i * 60) }))
     }));
     */
-    btn.on('pointerenter', () => { t.color = COLOR_FGHL; });
+    btn.on('pointerenter', () => {
+        t.color = COLOR_FGHL;
+        console.log('pointerenter', t.color);
+    });
     btn.on('pointerleave', () => { t.color = COLOR_FG; });
     btn.on('pointerup', () => args.click());
     return btn;
