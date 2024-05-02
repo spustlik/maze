@@ -18,6 +18,7 @@ export class IsoActor extends ex.Actor {
             width: 24, height: 24,
             z: 20000
         });
+        //this.name = (this as any).constructor.name;
         this.sheet = sheet;
         this.anims = [
             ex.Animation.fromSpriteSheet(this.sheet, [0], 200, ex.AnimationStrategy.Loop),
@@ -40,6 +41,7 @@ export class IsoActor extends ex.Actor {
             speed = Number.MAX_SAFE_INTEGER;
         this.actions
             .callMethod(() => this.setMoving(rx, ry))
+            //.runAction(new MyMoveToAction(pt,speed))
             .moveTo(pt, speed)
             .callMethod(() => {
                 setTimeout(() => {
@@ -47,7 +49,15 @@ export class IsoActor extends ex.Actor {
                     this.onMoveDone();
                 });
             });
+
+            /*
+        this.setMoving(rx, ry);
+        this.pos = pt;
+        this.motion.vel = ex.vec(rx, ry);
+        this.onMoveDone();
+        */
     }
+
     setMoving(rx: number, ry: number) {
         if (rx > 0 || ry > 0) {
             this.graphics.use(this.anims[0]);

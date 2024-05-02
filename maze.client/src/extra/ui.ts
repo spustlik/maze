@@ -4,6 +4,53 @@ import { title } from 'process';
 
 type ClickEvent = () => void;
 
+export function createImgButton(text: string,
+    args: {
+        pos: ex.Vector,
+        click: ClickEvent,
+        width?: number,
+        height?: number,
+        font?: ex.Font,
+        fontScale?: number,
+        colorFg?: ex.Color
+        colorHightlightFg?: ex.Color,
+    }) {
+    const btn = new ex.ScreenElement({
+        x: args.pos.x,
+        y: args.pos.y,
+        name: text
+    });
+
+    const COLOR_FG = args.colorFg ?? ex.Color.Black;
+    const COLOR_FGHL = args.colorHightlightFg ?? COLOR_FG;
+    const width = args.width ?? 240;
+    if (!args.fontScale)
+        args.fontScale = 2;
+    var { members, sprites } = uiResourceData.getBtnGraphics(width, args.height);
+
+    var g = new ex.GraphicsGroup({ members });
+    btn.graphics.add(g);
+
+    var lbl = new ex.Label({
+        x: 40,// + width / 2,
+        //width: 0,
+        y: sprites[0].height ?? 30,
+        color: COLOR_FG,
+        text: text,
+        spriteFont: uiResourceData.Font, //: args.font ?? uiResourceData.Font // new ex.Font({ bold: true, size: args.fontSize ?? 20 })
+        scale: ex.vec(args.fontScale, args.fontScale),
+        //font: args.font ?? new ex.Font({ bold: true, size: args.fontSize ?? 20 })
+    });
+    btn.addChild(lbl);
+
+    btn.on('pointerenter', () => { lbl.color = COLOR_FGHL; });
+    btn.on('pointerleave', () => { lbl.color = COLOR_FG; });
+    btn.on('pointerdown', () => { lbl.offset = ex.vec(3/args.fontScale, 3/args.fontScale); });
+    btn.on('pointerup', () => { lbl.offset = ex.vec(0, 0); args.click(); });
+    return btn;
+}
+
+
 export function createButton(text: string,
     args: {
         pos: ex.Vector,
@@ -52,44 +99,3 @@ export function createButton(text: string,
     return btn;
 }
 
-export function createImgButton(text: string,
-    args: {
-        pos: ex.Vector,
-        click: ClickEvent,
-        width?: number,
-        height?: number,
-        font?: ex.Font,
-        fontSize?: number,
-        colorFg?: ex.Color
-        colorHightlightFg?: ex.Color,
-    }) {
-    const btn = new ex.ScreenElement({
-        x: args.pos.x,
-        y: args.pos.y,
-        name: text
-    });
-
-    const COLOR_FG = args.colorFg ?? ex.Color.Black;
-    const COLOR_FGHL = args.colorHightlightFg ?? COLOR_FG;
-    const width = args.width ?? 170;
-
-    var { members, sprites } = uiResourceData.getBtnGraphics(width, args.height);
-
-    var g = new ex.GraphicsGroup({ members });
-    btn.graphics.add(g);
-
-    var lbl = new ex.Label({
-        x: 40,
-        y: sprites[0].height ?? 30,
-        color: COLOR_FG,
-        text: text,
-        font: args.font ?? new ex.Font({ bold: true, size: args.fontSize ?? 20 })
-    });
-    btn.addChild(lbl);
-
-    btn.on('pointerenter', () => { lbl.color = COLOR_FGHL; });
-    btn.on('pointerleave', () => { lbl.color = COLOR_FG; });
-    btn.on('pointerdown', () => { lbl.offset = ex.vec(3, 3); });
-    btn.on('pointerup', () => { args.click(); lbl.offset = ex.vec(0, 0); });
-    return btn;
-}

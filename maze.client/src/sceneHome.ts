@@ -5,6 +5,7 @@ import { createMazeScene } from './sceneMaze';
 import { createButton, createImgButton } from './extra/ui';
 import { loadResources } from './extra/extra';
 import { uiResources } from './extra/uiResources';
+import { createTestScene } from './sceneTests';
 
 
 
@@ -18,6 +19,7 @@ export class HomeScene extends ex.Scene {
         { key: 'breakout', title: 'Breakout', create: (g) => createBreakoutScene(g) },
         { key: 'mazegen', title: 'Maze generator', create: () => createMazeGeneratorScene() },
         { key: 'maze', title: 'Maze', create: () => createMazeScene() },
+        { key: 'tests', title: 'Tests', create: () => createTestScene() },
     ];
 
     constructor() {
@@ -46,7 +48,7 @@ export class HomeScene extends ex.Scene {
             const btn2 = createImgButton(def.title, {
                 pos: ex.vec(20, 60 + i * 120),
                 height: 100,
-                width: 300,
+                width: 400,
                 colorHightlightFg: ex.Color.White,
                 click: () => this.gotoScene(game, def)
             });

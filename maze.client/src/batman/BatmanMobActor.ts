@@ -27,6 +27,8 @@ export class BatmanMob extends IsoActor {
     update(game: ex.Engine, delta) {
         super.update(game, delta);
         if (!this.isMoving) {
+            //this.moveToIso(1, 0);
+            //return;
             var h = new IsoHelper(this.isoMap);
             //if (ex.randomIntInRange(0, 100) < 20)
             {

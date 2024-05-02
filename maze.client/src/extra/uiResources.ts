@@ -4,6 +4,7 @@ import * as ex from 'excalibur';
 export const uiResources = new class UiResources {
     button = new ex.ImageSource("src/assets/button.png")
     bg = new ex.ImageSource("src/assets/homebg.jpeg")
+    font = new ex.ImageSource("src/assets/font.png")
 }
 
 export const uiResourceData = new class UiResourceData {
@@ -56,6 +57,16 @@ export const uiResourceData = new class UiResourceData {
         ];
         return { members, sprites: img };
     };
+    _fontSpriteSheet = ex.SpriteSheet.fromImageSource({
+        image: uiResources.font,
+        grid: { columns: 1, rows: 43, spriteWidth: 10, spriteHeight: 10 }
+    });
+    Font = new ex.SpriteFont({
+        alphabet: '0123456789._!@©# ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        caseInsensitive: true,
+        spriteSheet: this._fontSpriteSheet,
+        spacing:1
+    });
 }
 
 
