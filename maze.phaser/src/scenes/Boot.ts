@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { Preloader } from './Preloader';
 
 export class Boot extends Scene
 {
@@ -17,6 +18,6 @@ export class Boot extends Scene
 
     create ()
     {
-        this.scene.start('Preloader');
+        this.scene.start(Preloader.name);
     }
 }
