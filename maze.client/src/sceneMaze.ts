@@ -64,6 +64,8 @@ export class MazeScene extends ex.Scene implements IIsoScene {
             this.add(mob);
             mob.moveToIso(0, 0);
         }
+
+        //this.camera.strategy.lockToActor(this.batman);
     }
     onTileClicked(tile: ex.IsometricTile, tilepos: Point) {
         console.log('tile clicked', tilepos);

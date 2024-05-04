@@ -5,6 +5,7 @@ import { batmanData } from './BatmanResources';
 export class Batman extends IsoActor {
     constructor() {
         super(batmanData.Batman_Sheet);
+        this.name = 'BATMAN';
         this.offset = ex.vec(0, -4);
         this.anims = [
             ex.Animation.fromSpriteSheet(this.sheet, [1, 2], 200, ex.AnimationStrategy.Loop),
@@ -20,11 +21,12 @@ export class Batman extends IsoActor {
     }
     moveToIso(rx: number, ry: number) {
         super.moveToIso(rx, ry);
-        console.log(`moving #${this.id} to ${this.tilepos} (r:${rx},${ry})`); 
+        console.log(`moving #${this.name} to ${this.tilepos} (r:${rx},${ry})`); 
     }
     onMoveDone() {
         if (!this.isMoving) {
-            this.graphics.use(this.anims[2]);
+            //this.graphics.use(this.anims[2]);
+            this.setGraphicAnim(2);
         }
     }
     update(g: ex.Engine, delta) {

@@ -43,8 +43,8 @@ export function createImgButton(text: string,
     });
     btn.addChild(lbl);
 
-    btn.on('pointerenter', () => { lbl.color = COLOR_FGHL; });
-    btn.on('pointerleave', () => { lbl.color = COLOR_FG; });
+    btn.on('pointerenter', () => { lbl.color = COLOR_FGHL; lbl.opacity = 0.5; });
+    btn.on('pointerleave', () => { lbl.color = COLOR_FG; lbl.opacity = 1; });
     btn.on('pointerdown', () => { lbl.offset = ex.vec(3/args.fontScale, 3/args.fontScale); });
     btn.on('pointerup', () => { lbl.offset = ex.vec(0, 0); args.click(); });
     return btn;

@@ -1,5 +1,4 @@
 import * as ex from 'excalibur';
-import { ICoordinates, Point } from '../common/Point';
 
 export interface IIsoScene {
     isoMap: ex.IsometricMap
@@ -24,12 +23,7 @@ export class IsoActor extends ex.Actor {
             ex.Animation.fromSpriteSheet(this.sheet, [0], 200, ex.AnimationStrategy.Loop),
         ];
     }
-    scaleFlipX(flip: boolean) {
-        if (flip)
-            this.scale = ex.vec(-this.zoom, this.zoom);
-        else
-            this.scale = ex.vec(this.zoom, this.zoom);
-    }
+
     moveToIso(rx: number, ry: number) {
         this.isMoving = true;
         var newpos = this.tilepos.add(ex.vec(rx, ry));
@@ -50,22 +44,37 @@ export class IsoActor extends ex.Actor {
                 });
             });
 
-            /*
+        /*
         this.setMoving(rx, ry);
         this.pos = pt;
         this.motion.vel = ex.vec(rx, ry);
         this.onMoveDone();
         */
     }
-
+    _lastAnim: number;
+    setGraphicAnim(i: number) {
+        if (this._lastAnim == i)
+            return;
+        this._lastAnim = i;
+        //if (this.anims[i].frames.length == 1) {
+        //    this.graphics.use(this.anims[i].frames[0].graphic);
+        //    return;
+        //}
+        this.graphics.use(this.anims[i]);
+    }
+    scaleFlipX(flip: boolean) {
+        var scale = flip ? ex.vec(-this.zoom, this.zoom) : ex.vec(this.zoom, this.zoom);
+        if (this.scale.equals(scale))
+            return;
+        this.scale = scale;
+    }
     setMoving(rx: number, ry: number) {
         if (rx > 0 || ry > 0) {
-            this.graphics.use(this.anims[0]);
+            this.setGraphicAnim(0);
         } else {
-            this.graphics.use(this.anims[1]);
+            this.setGraphicAnim(1);
         }
         this.scaleFlipX((rx == 0 && ry > 0) || (rx == 0 && ry < 0));
-
     }
     onMoveDone() {
     }

@@ -59,10 +59,10 @@ export const uiResourceData = new class UiResourceData {
     };
     _fontSpriteSheet = ex.SpriteSheet.fromImageSource({
         image: uiResources.font,
-        grid: { columns: 1, rows: 43, spriteWidth: 10, spriteHeight: 10 }
+        grid: { columns: 1, rows: 45, spriteWidth: 10, spriteHeight: 10 }
     });
     Font = new ex.SpriteFont({
-        alphabet: '0123456789._!@©# ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        alphabet: '01234567890.- ©][ABCDEFGHIJKLMNOPQRSTUVWXYZ|/',
         caseInsensitive: true,
         spriteSheet: this._fontSpriteSheet,
         spacing:1

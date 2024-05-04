@@ -23,12 +23,19 @@ export class BatmanMob extends IsoActor {
         if (mobtype == MobType.ChinaHead)
             this.moveSpeed = 250;
     }
-    lastdir: PointDirection
     update(game: ex.Engine, delta) {
         super.update(game, delta);
+    }
+
+    _lastdir: PointDirection
+    onPreUpdate() {
         if (!this.isMoving) {
+            // skace:-(
             //this.moveToIso(1, 0);
             //return;
+
+            return;
+
             var h = new IsoHelper(this.isoMap);
             //if (ex.randomIntInRange(0, 100) < 20)
             {
@@ -43,10 +50,10 @@ export class BatmanMob extends IsoActor {
                     }
                     return false;
                 }
-                if (this.lastdir != undefined && tryDir(this.lastdir))
+                if (this._lastdir != undefined && tryDir(this._lastdir))
                     return;
-                this.lastdir = ex.randomIntInRange(0, 3);
-                tryDir(this.lastdir);
+                this._lastdir = ex.randomIntInRange(0, 3);
+                tryDir(this._lastdir);
             }
         }
     }

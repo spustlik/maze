@@ -4,8 +4,9 @@ import { createMazeGeneratorScene } from './sceneMazeGenerator';
 import { createMazeScene } from './sceneMaze';
 import { createButton, createImgButton } from './extra/ui';
 import { loadResources } from './extra/extra';
-import { uiResources } from './extra/uiResources';
+import { uiResourceData, uiResources } from './extra/uiResources';
 import { createTestScene } from './sceneTests';
+import { text } from 'stream/consumers';
 
 
 
@@ -56,6 +57,11 @@ export class HomeScene extends ex.Scene {
             this.add(btn2);
         }
 
+        this.add(new ex.Label({
+            pos: ex.vec(30, game.drawHeight - 30),
+            text: "Created using AI Microsoft Bing - Copilot - Dall-E3",
+            spriteFont: uiResourceData.Font
+        }));
     }
 
     override onActivate(ctx: ex.SceneActivationContext) {
