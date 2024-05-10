@@ -77,11 +77,7 @@ export class HomeScene extends ex.Scene {
         if (window.location.hash) {
             this.gotoSceneByHash(ctx.engine);
         }
-        //var sp = new ex.Actor({ pos: ex.vec(10, 10), name: 'debug sprite' });
-        //var spr = uiResources.button.toSprite();
-        //sp.graphics.use(spr);
-        //this.add(sp);
-        //console.log('sprite', spr.width, spr.height);
+
     }
     gotoSceneByHash(engine: ex.Engine) {
         var s = window.location.hash;
@@ -105,18 +101,6 @@ export class HomeScene extends ex.Scene {
     }
     createScene(game: ex.Engine, def: SceneDef) {
         const instance = def.create(game);
-
-        /*
-        var homeBtn = createButton('X', {
-            pos: ex.vec(game.drawWidth - 45, 5),
-            click: () => {
-                window.location.hash = '';
-                game.goToScene('root');
-            },
-            width: 40,
-            height: 40,
-        });
-        */
         let homeBtn = createSpriteButton({
             pos: ex.vec(game.drawWidth - 65, 5),
             click: () => {
@@ -126,7 +110,6 @@ export class HomeScene extends ex.Scene {
             sprite: uiResourceData.ButtonCloseSpriteSheet.getSprite(0, 0),
             spriteHover: uiResourceData.ButtonCloseSpriteSheet.getSprite(0,1)
         });
-        homeBtn.anchor = ex.vec(0, 0);
         instance.add(homeBtn);
 
         game.addScene(def.key, instance);

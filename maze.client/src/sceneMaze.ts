@@ -27,7 +27,6 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         super.onInitialize(game);
         //const maze = Maze.read(this.resources.Maze1.data);
         const maze = Maze.read(batmanResources.MazeTest2.data);
-        this.mazeMap = this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
 
         this.isoMap = new ex.IsometricMap({
             pos: ex.vec(game.drawWidth / 2, 20),
@@ -43,6 +42,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
                 this.onTileClicked(tile, Point.From(tile));
         });
         this.add(this.isoMap);
+
         this.roadsTile(maze);
         //this.simpleTile(maze);
 
@@ -52,10 +52,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         this.batman.moveToIso(1, 1);
 
         this.createMobs();
-
-        this.camera.strategy.lockToActor(this.batman);
-        //this.mazeMap.actions.follow(this.batman);
-
+        this.addMazeMap(maze); //iso is changing transformation, zindex??
     }
     onTileClicked(tile: ex.IsometricTile, tilepos: Point) {
         console.log('tile clicked', tilepos);
@@ -65,6 +62,8 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     }
     update(game: ex.Engine, delta) {
         super.update(game, delta);
+        this.camera.move(this.batman.pos, 0);
+
         if (game.input.keyboard.wasPressed(ex.Keys.Num7))
             return this.batman.moveToIso(-1, 0);
         if (game.input.keyboard.wasPressed(ex.Keys.Num1))
@@ -107,15 +106,18 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     }
     addMazeMap(maze: Maze) {
         var r = new MazeRaster(maze, this, 4);
-        const mazeActor = new ex.Actor({
-            pos: ex.vec(5, 5),
-            anchor: ex.vec(0, 0),
-            width: r.width,
-            height: r.height
-        });
+        const mazeActor = new ex.ScreenElement(
+            {
+                pos: ex.vec(5, 5),
+                anchor: ex.vec(0, 0),
+                width: r.width,
+                height: r.height                
+            }
+        );
+        // screenElement or update(): this.mazeMap.pos = this.camera.pos.sub(ex.vec(game.halfDrawWidth, game.halfDrawHeight)).add(ex.vec(10, 10));
         mazeActor.graphics.use(r);
         this.add(mazeActor);
-        return mazeActor;
+        this.mazeMap = mazeActor;
     }
     createMobs() {
         var rnd = new ex.Random(1234);
@@ -139,7 +141,5 @@ export class MazeScene extends ex.Scene implements IIsoScene {
 }
 export function createMazeScene() {
     const scene = new MazeScene();
-
-    //var maze = Maze.load((47, 49);
     return scene;
 }

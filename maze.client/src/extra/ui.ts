@@ -45,7 +45,7 @@ export function createImgButton(text: string,
 
     btn.on('pointerenter', () => { lbl.color = COLOR_FGHL; lbl.opacity = 0.5; });
     btn.on('pointerleave', () => { lbl.color = COLOR_FG; lbl.opacity = 1; });
-    btn.on('pointerdown', () => { lbl.offset = ex.vec(3/args.fontScale, 3/args.fontScale); });
+    btn.on('pointerdown', () => { lbl.offset = ex.vec(3 / args.fontScale, 3 / args.fontScale); });
     btn.on('pointerup', () => { lbl.offset = ex.vec(0, 0); args.click(); });
     return btn;
 }
@@ -58,16 +58,14 @@ export function createSpriteButton(args: {
 }) {
     const btn = new ex.ScreenElement({
         x: args.pos.x,
-        y: args.pos.y,
-        width: args.sprite.width, 
-        height:args.sprite.height
+        y: args.pos.y
     });
 
     btn.graphics.use(args.sprite);
 
     btn.on('pointerenter', () => { btn.graphics.use(args.spriteHover); });
     btn.on('pointerleave', () => { btn.graphics.use(args.sprite); });
-    btn.on('pointerdown', () => { } );
+    btn.on('pointerdown', () => { });
     btn.on('pointerup', () => { args.click(); });
     return btn;
 }
