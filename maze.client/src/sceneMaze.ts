@@ -13,7 +13,7 @@ import { loadResources } from './extra/extra';
 export class MazeScene extends ex.Scene implements IIsoScene {
     isoMap: ex.IsometricMap;
     batman: Batman;
-    mazeMap: MazeRaster;
+    mazeMap: ex.Actor;
     constructor() {
         super();
     }
@@ -29,8 +29,6 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         const maze = Maze.read(batmanResources.MazeTest2.data);
         this.mazeMap = this.addMazeMap(maze); //why it cannot be added later? iso is changing transformation?
 
-        //game.showDebug(true);
-
         this.isoMap = new ex.IsometricMap({
             pos: ex.vec(game.drawWidth / 2, 20),
             tileWidth: 100,
@@ -44,8 +42,6 @@ export class MazeScene extends ex.Scene implements IIsoScene {
             if (tile)
                 this.onTileClicked(tile, Point.From(tile));
         });
-        //this.isoMap.transform.scale = ex.vec(0.5, 0.5);
-
         this.add(this.isoMap);
         this.roadsTile(maze);
         //this.simpleTile(maze);
@@ -55,17 +51,11 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         this.batman.moveToIso(0, 0);
         this.batman.moveToIso(1, 1);
 
+        this.createMobs();
 
-        var rnd = new ex.Random(1234);
-        for (var i = 0; i <= 5; i++) {
-            var mob = new BatmanMob(i);
-            mob.tilepos = ex.vec(ex.randomIntInRange(2, 15, rnd), ex.randomIntInRange(2, 15, rnd));
-            //mob.tilepos = ex.vec(2 + i, 2 + i);
-            this.add(mob);
-            mob.moveToIso(0, 0);
-        }
+        this.camera.strategy.lockToActor(this.batman);
+        //this.mazeMap.actions.follow(this.batman);
 
-        //this.camera.strategy.lockToActor(this.batman);
     }
     onTileClicked(tile: ex.IsometricTile, tilepos: Point) {
         console.log('tile clicked', tilepos);
@@ -91,7 +81,6 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         if (game.input.keyboard.wasPressed(ex.Keys.NumMultiply)) {
             console.log('offset ' + this.batman.offset);
         }
-        this.mazeMap.rasterize();
     }
     roadsTile(maze: Maze) {
         var isoHelp = new IsoHelper(this.isoMap);
@@ -99,9 +88,11 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         for (let tile of this.isoMap.tiles) {
             let pos = { x: tile.x, y: tile.y };
             var c = maze.Get(pos);
-            var points = getAroundPoints(pos).map(p => maze.Get(p) ?? MazeCell.VISITED);
-            var ptstr = c + points.join("");
-            tile.addGraphic(batmanData.getTileSprite(ptstr));
+            if (c <= 1) {
+                var points = getAroundPoints(pos).map(p => maze.Get(p) ?? MazeCell.VISITED);
+                var ptstr = c + points.join("");
+                tile.addGraphic(batmanData.getTileSprite(ptstr));
+            }
         }
     }
     simpleTile(maze: Maze) {
@@ -124,7 +115,25 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         });
         mazeActor.graphics.use(r);
         this.add(mazeActor);
-        return r;
+        return mazeActor;
+    }
+    createMobs() {
+        var rnd = new ex.Random(1234);
+        var isoHelp = new IsoHelper(this.isoMap);
+        const MOBS = 6;
+        const TRIES = 10;
+        for (var i = 0; i < MOBS; i++) {
+            var mob = new BatmanMob(i);
+            for (let t = 0; t < TRIES; t++) {
+                mob.tilepos = ex.vec(ex.randomIntInRange(2, 15, rnd), ex.randomIntInRange(2, 15, rnd));
+                let k = isoHelp.getKind(mob.tilepos);
+                if (k == IsoTileKind.ROAD) {
+                    break;
+                }
+            }
+            this.add(mob);
+            mob.moveToIso(0, 0);
+        }
     }
 
 }
