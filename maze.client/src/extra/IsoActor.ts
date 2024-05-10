@@ -1,4 +1,5 @@
 import * as ex from 'excalibur';
+import { MyMoveToIso } from './moveToAction';
 
 export interface IIsoScene {
     isoMap: ex.IsometricMap
@@ -33,6 +34,8 @@ export class IsoActor extends ex.Actor {
         let speed = this.moveSpeed;
         if (rx == 0 && ry == 0)
             speed = Number.MAX_SAFE_INTEGER;
+        this.actions.getQueue().add(new MyMoveToIso(this, ex.vec(rx, ry), pt, speed));
+        /*
         this.actions
             .callMethod(() => this.setMoving(rx, ry))
             //.runAction(new MyMoveToAction(pt,speed))
@@ -43,23 +46,14 @@ export class IsoActor extends ex.Actor {
                     this.onMoveDone();
                 });
             });
-
-        /*
-        this.setMoving(rx, ry);
-        this.pos = pt;
-        this.motion.vel = ex.vec(rx, ry);
-        this.onMoveDone();
         */
+
     }
     _lastAnim: number;
     setGraphicAnim(i: number) {
         if (this._lastAnim == i)
             return;
         this._lastAnim = i;
-        //if (this.anims[i].frames.length == 1) {
-        //    this.graphics.use(this.anims[i].frames[0].graphic);
-        //    return;
-        //}
         this.graphics.use(this.anims[i]);
     }
     scaleFlipX(flip: boolean) {

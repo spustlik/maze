@@ -47,8 +47,8 @@ export class HomeScene extends ex.Scene {
             const def = this.scenes[i];
 
             const btn2 = createImgButton(def.title, {
-                pos: ex.vec(20, 60 + i * 120),
-                height: 100,
+                pos: ex.vec(20, 40 + i * 100),
+                height: 90,
                 width: 400,
                 colorHightlightFg: ex.Color.White,
                 click: () => this.gotoScene(game, def)
@@ -60,31 +60,40 @@ export class HomeScene extends ex.Scene {
         this.add(new ex.Label({
             pos: ex.vec(30, game.drawHeight - 30),
             text: "Created using AI Microsoft Bing - Copilot - Dall-E3",
-            spriteFont: uiResourceData.Font
+            scale: ex.vec(1.6, 1.6),
+            spriteFont: uiResourceData.Font,
+            //color:ex.Color.Red
         }));
     }
 
     override onActivate(ctx: ex.SceneActivationContext) {
         console.log('onActivate-home');
 
+        window.addEventListener('hashchange', (h: HashChangeEvent) => {
+            console.log('hash changed', window.location.hash);
+            this.gotoSceneByHash(ctx.engine);
+        });
+
         if (window.location.hash) {
-            var s = window.location.hash;
-            if (s.startsWith('#'))
-                s = s.substring(1);
-            if (ctx.engine.currentSceneName != s) {
-                var found = this.scenes.filter(a => a.key == s)[0];
-                //console.log('init', s, found);
-                if (found) {
-                    this.gotoScene(ctx.engine, found);
-                    return;
-                }
-            }
+            this.gotoSceneByHash(ctx.engine);
         }
         //var sp = new ex.Actor({ pos: ex.vec(10, 10), name: 'debug sprite' });
         //var spr = uiResources.button.toSprite();
         //sp.graphics.use(spr);
         //this.add(sp);
         //console.log('sprite', spr.width, spr.height);
+    }
+    gotoSceneByHash(engine: ex.Engine) {
+        var s = window.location.hash;
+        if (s.startsWith('#'))
+            s = s.substring(1);
+        if (engine.currentSceneName == s)
+            return false;
+        var found = this.scenes.filter(a => a.key == s)[0];
+        if (!found)
+            return false;
+        this.gotoScene(engine, found);
+        return true;
     }
 
     gotoScene(game: ex.Engine, def: SceneDef) {

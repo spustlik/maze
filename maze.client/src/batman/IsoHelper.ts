@@ -19,6 +19,8 @@ export class IsoHelper {
     }
     getKind(pos: ICoordinates) {
         var tile = this.isoMap.getTile(pos.x, pos.y);
+        if (!tile)
+            return;
         return this.getTileKind(tile);
     }
     getTileKind(tile: ex.IsometricTile) {

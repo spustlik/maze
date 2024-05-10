@@ -34,7 +34,7 @@ export class BatmanMob extends IsoActor {
             //this.moveToIso(1, 0);
             //return;
 
-            return;
+            //return;
 
             var h = new IsoHelper(this.isoMap);
             //if (ex.randomIntInRange(0, 100) < 20)
