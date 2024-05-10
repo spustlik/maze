@@ -4,6 +4,8 @@ import { Maze, MazeCell } from '../Maze';
 export enum IsoTileKind {
     WALL = 'WALL', ROAD = 'ROAD', CITY = 'CITY'
 }
+
+const TILEKIND = 'TILEKIND';
 export class IsoHelper {
     constructor(private isoMap: ex.IsometricMap) {
     }
@@ -13,10 +15,11 @@ export class IsoHelper {
         return this.setTileKind(tile, kind);
     }
     setTileKind(tile: ex.IsometricTile, kind: IsoTileKind) {
-        for (var k in IsoTileKind) {
-            tile.removeTag(k);
-        }
-        tile.addTag(kind);
+    //    for (var k in IsoTileKind) {
+    //        tile.removeTag(k);
+    //    }
+    //    tile.addTag(kind);
+        tile.data.set(TILEKIND, kind);
     }
     getKind(pos: ICoordinates) {
         var tile = this.isoMap.getTile(pos.x, pos.y);
@@ -25,10 +28,11 @@ export class IsoHelper {
         return this.getTileKind(tile);
     }
     getTileKind(tile: ex.IsometricTile) {
-        for (var k in IsoTileKind) {
-            if (tile.hasTag(k))
-                return k;
-        }
+    //    for (var k in IsoTileKind) {
+    //        if (tile.hasTag(k))
+    //            return k;
+        //    }
+        return tile.data.get(TILEKIND) as IsoTileKind;
     }
     buildMaze(maze: Maze) {
         for (let tile of this.isoMap.tiles) {

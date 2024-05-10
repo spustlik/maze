@@ -4,6 +4,7 @@ import { replaceAll } from '../common/utils';
 import { MobType } from './BatmanMobActor';
 export const batmanResources = new class BatmanResources {
     Roads = new ex.ImageSource("src/assets/roads.png")
+    Buildings = new ex.ImageSource("src/assets/buildings.png")
     Batman = new ex.ImageSource("src/assets/batman.png")
     BatmanMobs = new ex.ImageSource("src/assets/batman-mobs.png")
     MazeTest = new StringSource("src/assets/mazeTest.txt")
@@ -23,6 +24,10 @@ export const batmanData = new class BatmanData {
     Roads_Sheet = ex.SpriteSheet.fromImageSource({
         image: batmanResources.Roads,
         grid: { columns: 1, rows: 29, spriteWidth: 100, spriteHeight: 65 }
+    });
+    Buildings_Sheet = ex.SpriteSheet.fromImageSource({
+        image: batmanResources.Buildings,
+        grid: { columns: 1, rows: 49, spriteWidth: 133, spriteHeight: 130 }
     });
     Batman_Sheet = ex.SpriteSheet.fromImageSource({
         image: batmanResources.Batman,

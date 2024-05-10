@@ -5,7 +5,7 @@ import { Point, getAroundPoints, subtractPoint } from './common/Point';
 import { Batman } from './batman/BatmanActor';
 import { BatmanMob } from './batman/BatmanMobActor';
 import { batmanData, batmanResources } from './batman/BatmanResources';
-import { IIsoScene } from './extra/IsoActor';
+import { IIsoScene, IsoActor } from './extra/IsoActor';
 import { IsoHelper, IsoTileKind } from './batman/IsoHelper';
 import { loadResources } from './extra/extra';
 
@@ -14,6 +14,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     isoMap: ex.IsometricMap;
     batman: Batman;
     mazeMap: ex.Actor;
+    rnd = new ex.Random(1234);
     constructor() {
         super();
     }
@@ -25,7 +26,8 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     }
     onInitialize(game: ex.Engine) {
         super.onInitialize(game);
-        //const maze = Maze.read(this.resources.Maze1.data);
+        //const maze = Maze.read(batmanResources.Maze1.data);
+        //const maze = Maze.read(batmanResources.MazeT.data);
         const maze = Maze.read(batmanResources.MazeTest2.data);
 
         this.isoMap = new ex.IsometricMap({
@@ -84,12 +86,24 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         var isoHelp = new IsoHelper(this.isoMap);
         isoHelp.buildMaze(maze);
         for (let tile of this.isoMap.tiles) {
-            let pos = { x: tile.x, y: tile.y };
+            let pos = ex.vec(tile.x, tile.y);
             var c = maze.Get(pos);
             if (c <= 1) {
+                //roads
                 var points = getAroundPoints(pos).map(p => maze.Get(p) ?? MazeCell.VISITED);
                 var ptstr = c + points.join("");
                 tile.addGraphic(batmanData.getTileSprite(ptstr));
+            } else {
+                //buildings
+                tile.addGraphic(batmanData.Roads_Sheet.getSprite(0, 13));
+                var bld = new ex.Actor({
+                    pos:this.isoMap.tileToWorld(pos)
+                });
+                let b = ex.randomIntInRange(0, batmanData.Buildings_Sheet.rows - 1, this.rnd);
+                let spr = batmanData.Buildings_Sheet.getSprite(0, b);
+                bld.graphics.use(spr);
+                bld.z = 99999;
+                this.add(bld);
             }
         }
     }
@@ -110,7 +124,8 @@ export class MazeScene extends ex.Scene implements IIsoScene {
                 pos: ex.vec(5, 5),
                 anchor: ex.vec(0, 0),
                 width: r.width,
-                height: r.height                
+                height: r.height,
+                opacity:0.7
             }
         );
         mazeActor.z = 999999;
@@ -120,14 +135,13 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         this.mazeMap = mazeActor;
     }
     createMobs() {
-        var rnd = new ex.Random(1234);
         var isoHelp = new IsoHelper(this.isoMap);
         const MOBS = 6;
         const TRIES = 10;
         for (var i = 0; i < MOBS; i++) {
             var mob = new BatmanMob(i);
             for (let t = 0; t < TRIES; t++) {
-                mob.tilepos = ex.vec(ex.randomIntInRange(2, 15, rnd), ex.randomIntInRange(2, 15, rnd));
+                mob.tilepos = ex.vec(ex.randomIntInRange(2, 15, this.rnd), ex.randomIntInRange(2, 15, this.rnd));
                 let k = isoHelp.getKind(mob.tilepos);
                 if (k == IsoTileKind.ROAD) {
                     break;
