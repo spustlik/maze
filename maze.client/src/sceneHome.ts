@@ -2,7 +2,7 @@ import * as ex from 'excalibur';
 import { createBreakoutScene } from './sceneBreakout';
 import { createMazeGeneratorScene } from './sceneMazeGenerator';
 import { createMazeScene } from './sceneMaze';
-import { createButton, createImgButton } from './extra/ui';
+import { createButton, createImgButton, createSpriteButton } from './extra/ui';
 import { loadResources } from './extra/extra';
 import { uiResourceData, uiResources } from './extra/uiResources';
 import { createTestScene } from './sceneTests';
@@ -46,7 +46,7 @@ export class HomeScene extends ex.Scene {
         for (var i = 0; i < this.scenes.length; i++) {
             const def = this.scenes[i];
 
-            const btn2 = createImgButton(def.title, {
+            const btn = createImgButton(def.title, {
                 pos: ex.vec(20, 40 + i * 100),
                 height: 90,
                 width: 400,
@@ -54,7 +54,7 @@ export class HomeScene extends ex.Scene {
                 click: () => this.gotoScene(game, def)
             });
             //console.log('button created', btn2.height, def.title);
-            this.add(btn2);
+            this.add(btn);
         }
 
         this.add(new ex.Label({
@@ -106,6 +106,7 @@ export class HomeScene extends ex.Scene {
     createScene(game: ex.Engine, def: SceneDef) {
         const instance = def.create(game);
 
+        /*
         var homeBtn = createButton('X', {
             pos: ex.vec(game.drawWidth - 45, 5),
             click: () => {
@@ -115,6 +116,17 @@ export class HomeScene extends ex.Scene {
             width: 40,
             height: 40,
         });
+        */
+        let homeBtn = createSpriteButton({
+            pos: ex.vec(game.drawWidth - 65, 5),
+            click: () => {
+                window.location.hash = '';
+                game.goToScene('root');
+            },            
+            sprite: uiResourceData.ButtonCloseSpriteSheet.getSprite(0, 0),
+            spriteHover: uiResourceData.ButtonCloseSpriteSheet.getSprite(0,1)
+        });
+        homeBtn.anchor = ex.vec(0, 0);
         instance.add(homeBtn);
 
         game.addScene(def.key, instance);

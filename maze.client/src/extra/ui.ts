@@ -50,6 +50,28 @@ export function createImgButton(text: string,
     return btn;
 }
 
+export function createSpriteButton(args: {
+    pos: ex.Vector,
+    click: ClickEvent,
+    sprite: ex.Sprite,
+    spriteHover: ex.Sprite
+}) {
+    const btn = new ex.ScreenElement({
+        x: args.pos.x,
+        y: args.pos.y,
+        width: args.sprite.width, 
+        height:args.sprite.height
+    });
+
+    btn.graphics.use(args.sprite);
+
+    btn.on('pointerenter', () => { btn.graphics.use(args.spriteHover); });
+    btn.on('pointerleave', () => { btn.graphics.use(args.sprite); });
+    btn.on('pointerdown', () => { } );
+    btn.on('pointerup', () => { args.click(); });
+    return btn;
+}
+
 
 export function createButton(text: string,
     args: {

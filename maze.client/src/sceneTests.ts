@@ -91,7 +91,7 @@ class TestScene extends ex.Scene {
             //s2.pos = ex.Vector.Zero;
             for (let i = 0; i < 10; i++) {
                 let target = this.isoMap.tileToWorld(ex.vec(i, 0));
-                s.actions.moveTo(target, 150);
+                s2.actions.moveTo(target, 150);
                 //s2.actions.runAction(new MyMoveTo(s2, target.x, target.y, 150));
             }
             s2.actions.callMethod(() => {

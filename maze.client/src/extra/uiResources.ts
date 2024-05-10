@@ -3,6 +3,7 @@ import * as ex from 'excalibur';
 
 export const uiResources = new class UiResources {
     button = new ex.ImageSource("src/assets/button.png")
+    buttonClose = new ex.ImageSource("src/assets/buttonclose.png")
     bg = new ex.ImageSource("src/assets/homebg.jpeg")
     font = new ex.ImageSource("src/assets/font.png")
 }
@@ -66,6 +67,10 @@ export const uiResourceData = new class UiResourceData {
         caseInsensitive: true,
         spriteSheet: this._fontSpriteSheet,
         spacing:1
+    });
+    ButtonCloseSpriteSheet = ex.SpriteSheet.fromImageSource({
+        image: uiResources.buttonClose,
+        grid: { columns: 1, rows: 2, spriteWidth: 60, spriteHeight: 62 /*uiResources.buttonClose.height / 2*/ }
     });
 }
 
