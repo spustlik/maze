@@ -95,19 +95,13 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     }
     roadsTile(maze: Maze) {
         var isoHelp = new IsoHelper(this.isoMap);
+        isoHelp.buildMaze(maze);
         for (let tile of this.isoMap.tiles) {
-            var pos = { x: tile.x, y: tile.y };
+            let pos = { x: tile.x, y: tile.y };
             var c = maze.Get(pos);
             var points = getAroundPoints(pos).map(p => maze.Get(p) ?? MazeCell.VISITED);
             var ptstr = c + points.join("");
-            //if (pos.x < 3 && pos.y < 3) console.log(ptstr, points);
             tile.addGraphic(batmanData.getTileSprite(ptstr));
-            if (c == MazeCell.WALL)
-                isoHelp.setTileKind(tile, IsoTileKind.WALL);
-            if (c == MazeCell.UNBREAKABLE)
-                isoHelp.setTileKind(tile, IsoTileKind.CITY);
-            if (c == MazeCell.VISITED)
-                isoHelp.setTileKind(tile, IsoTileKind.ROAD);
         }
     }
     simpleTile(maze: Maze) {

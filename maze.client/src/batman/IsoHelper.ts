@@ -1,5 +1,6 @@
 import * as ex from 'excalibur';
 import { ICoordinates } from '../common/Point';
+import { Maze, MazeCell } from '../Maze';
 export enum IsoTileKind {
     WALL = 'WALL', ROAD = 'ROAD', CITY = 'CITY'
 }
@@ -29,4 +30,17 @@ export class IsoHelper {
                 return k;
         }
     }
+    buildMaze(maze: Maze) {
+        for (let tile of this.isoMap.tiles) {
+            var pos = { x: tile.x, y: tile.y }; // what is in tile.pos ?!?! pos Returns the top left corner of the [[IsometricTile]] in world space
+            var c = maze.Get(pos);           
+            if (c == MazeCell.WALL)
+                this.setTileKind(tile, IsoTileKind.WALL);
+            if (c == MazeCell.UNBREAKABLE)
+                this.setTileKind(tile, IsoTileKind.CITY);
+            if (c == MazeCell.VISITED)
+                this.setTileKind(tile, IsoTileKind.ROAD);
+        }
+    }
+
 }
