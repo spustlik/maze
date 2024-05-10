@@ -63,7 +63,6 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     update(game: ex.Engine, delta) {
         super.update(game, delta);
         this.camera.move(this.batman.pos, 0);
-
         if (game.input.keyboard.wasPressed(ex.Keys.Num7))
             return this.batman.moveToIso(-1, 0);
         if (game.input.keyboard.wasPressed(ex.Keys.Num1))
@@ -114,6 +113,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
                 height: r.height                
             }
         );
+        mazeActor.z = 999999;
         // screenElement or update(): this.mazeMap.pos = this.camera.pos.sub(ex.vec(game.halfDrawWidth, game.halfDrawHeight)).add(ex.vec(10, 10));
         mazeActor.graphics.use(r);
         this.add(mazeActor);

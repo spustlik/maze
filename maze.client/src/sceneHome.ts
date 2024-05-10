@@ -110,6 +110,7 @@ export class HomeScene extends ex.Scene {
             sprite: uiResourceData.ButtonCloseSpriteSheet.getSprite(0, 0),
             spriteHover: uiResourceData.ButtonCloseSpriteSheet.getSprite(0,1)
         });
+        homeBtn.z = Number.MAX_SAFE_INTEGER;
         instance.add(homeBtn);
 
         game.addScene(def.key, instance);
