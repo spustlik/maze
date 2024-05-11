@@ -70,8 +70,8 @@ export class HomeScene extends ex.Scene {
         console.log('onActivate-home');
 
         window.addEventListener('hashchange', (h: HashChangeEvent) => {
-            console.log('hash changed', window.location.hash);
-            this.gotoSceneByHash(ctx.engine);
+            console.log('hash changed', window.location.hash, h.newURL);
+            this.gotoSceneByHash(ctx.engine, h.newURL.split('#',2)[1]);
         });
 
         if (window.location.hash) {
@@ -79,16 +79,22 @@ export class HomeScene extends ex.Scene {
         }
 
     }
-    gotoSceneByHash(game: ex.Engine) {
-        var s = window.location.hash;
+    gotoSceneByHash(game: ex.Engine, hash?:string) {
+        var s = hash ?? window.location.hash;
         if (s.startsWith('#'))
             s = s.substring(1);
-        console.log('gotoSceneByHash', s, game.currentSceneName);
+        //console.log('gotoSceneByHash', s, game.currentSceneName);
         if (game.currentSceneName == s)
             return false;
         var found = this.scenes.filter(a => a.key == s)[0];
-        if (!found)
+        if (!found) {
+            if (!s) {
+                game.goToScene('root');
+                return true;
+            }
+            console.error(`scene ${s} not found`);
             return false;
+        }
         this.gotoScene(game, found);
         return true;
     }
@@ -108,6 +114,7 @@ export class HomeScene extends ex.Scene {
             pos: ex.vec(game.drawWidth - 65, 5),
             click: () => {
                 window.location.hash = '';
+
                 game.goToScene('root');
             },            
             sprite: uiResourceData.ButtonCloseSpriteSheet.getSprite(0, 0),
