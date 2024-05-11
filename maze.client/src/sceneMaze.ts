@@ -95,7 +95,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
                 tile.addGraphic(batmanData.getTileSprite(ptstr));
             } else {
                 //buildings
-                tile.addGraphic(batmanData.Roads_Sheet.getSprite(0, 13));
+                tile.addGraphic(batmanData.Roads_Water);
                 var bld = new ex.Actor({
                     pos:this.isoMap.tileToWorld(pos)
                 });

@@ -79,26 +79,29 @@ export class HomeScene extends ex.Scene {
         }
 
     }
-    gotoSceneByHash(engine: ex.Engine) {
+    gotoSceneByHash(game: ex.Engine) {
         var s = window.location.hash;
         if (s.startsWith('#'))
             s = s.substring(1);
-        if (engine.currentSceneName == s)
+        console.log('gotoSceneByHash', s, game.currentSceneName);
+        if (game.currentSceneName == s)
             return false;
         var found = this.scenes.filter(a => a.key == s)[0];
         if (!found)
             return false;
-        this.gotoScene(engine, found);
+        this.gotoScene(game, found);
         return true;
     }
 
-    gotoScene(game: ex.Engine, def: SceneDef) {
+    async gotoScene(game: ex.Engine, def: SceneDef) {
+        console.log('gotoScene', def.key, game.currentSceneName);
         if (!game.scenes[def.key]) {
             this.createScene(game, def);
         }
-        game.goToScene(def.key);
+        await game.goToScene(def.key);
         window.location.hash = def.key;
     }
+
     createScene(game: ex.Engine, def: SceneDef) {
         const instance = def.create(game);
         let homeBtn = createSpriteButton({

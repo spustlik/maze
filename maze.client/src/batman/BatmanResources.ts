@@ -25,6 +25,7 @@ export const batmanData = new class BatmanData {
         image: batmanResources.Roads,
         grid: { columns: 1, rows: 29, spriteWidth: 100, spriteHeight: 65 }
     });
+    Roads_Water = this.Roads_Sheet.getSprite(0, 13);
     Buildings_Sheet = ex.SpriteSheet.fromImageSource({
         image: batmanResources.Buildings,
         grid: { columns: 1, rows: 49, spriteWidth: 133, spriteHeight: 130 }
@@ -67,7 +68,7 @@ export const batmanData = new class BatmanData {
         s = replaceAll(s, "2", "1");
 
         if (s.startsWith("0"))
-            return this.Roads_Sheet.getSprite(0, 13);
+            return this.Roads_Water;
         s = s.substring(1);
         var map = {
             //zatacky
@@ -96,6 +97,6 @@ export const batmanData = new class BatmanData {
         if (map[s] != undefined)
             return this.Roads_Sheet.getSprite(0, map[s]);
         console.log('missing', s, map[s], map);
-        return this.Roads_Sheet.getSprite(0, 13);
+        return this.Roads_Water;
     }
 }
