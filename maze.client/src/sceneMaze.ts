@@ -43,7 +43,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         this.isoMap.events.on('pointerdown', (evt: ex.PointerEvent) => {
             var tile = this.isoMap.getTileByPoint(evt.worldPos);
             if (tile)
-                this.onTileClicked(tile, Point.From(tile));
+                this.onTileClicked(tile, Point.From(tile), evt);
         });
         this.add(this.isoMap);
 
@@ -58,11 +58,16 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         this.createMobs();
         this.addMazeMap(maze); //iso is changing transformation, zindex??
     }
-    onTileClicked(tile: ex.IsometricTile, tilepos: Point) {
+    onTileClicked(tile: ex.IsometricTile, tilepos: Point, evt:ex.PointerEvent) {
         console.log('tile clicked', tilepos);
-        //var dir = getPointsDirection(this.batman.tilepos, tilepos);
-        var ofs = subtractPoint(tilepos, this.batman.tilepos);
-        this.batman.moveToIso(ofs.x, ofs.y);
+        if ((evt.nativeEvent as MouseEvent).ctrlKey) {
+            //var dir = getPointsDirection(this.batman.tilepos, tilepos);
+            var ofs = subtractPoint(tilepos, this.batman.tilepos);
+            this.batman.moveToIso(ofs.x, ofs.y);
+            evt.nativeEvent.preventDefault();
+        } else {
+            //TODF: find path & go it
+        }
     }
     update(game: ex.Engine, delta) {
         super.update(game, delta);
