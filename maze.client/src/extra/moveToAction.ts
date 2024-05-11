@@ -31,7 +31,7 @@ class MyMoveTo implements ex.Action {
     protected start() {
         this._started = true;
         this._start = new ex.Vector(this._tx.pos.x, this._tx.pos.y);
-        this._distance = this._start.distance(this._end) * 0.9;
+        this._distance = this._start.distance(this._end);
         this._dir = this._end.sub(this._start).normalize();
     }
 
@@ -49,8 +49,13 @@ class MyMoveTo implements ex.Action {
     }
 
     public isComplete(entity: ex.Entity): boolean {
+        if (this._stopped)
+            return true;
         const tx = entity.get(ex.TransformComponent);
-        return this._stopped || new ex.Vector(tx.pos.x, tx.pos.y).distance(this._start) >= this._distance;
+        const distance = tx.pos.distance(this._start);
+        if (distance >= this._distance) //not using magic multiplier 0.9
+            return true;
+        return false;
     }
 
     public stop(): void {
@@ -75,7 +80,7 @@ export class MyMoveToIso extends MyMoveTo {
     }
     public start() {
         super.start();
-        this.entity.setMoving(this.rel.x, this.rel.y);
+        this.entity.setMoveGraphic(this.rel.x, this.rel.y);
     }
     public update(_delta: number): void {
         super.update(_delta);

@@ -1,5 +1,5 @@
 import * as ex from 'excalibur';
-import { Maze, MazeCell } from './Maze';
+import { Maze, MazeCell, getBuilding } from './Maze';
 import { MazeRaster } from './MazeRaster';
 import { Point, getAroundPoints, subtractPoint } from './common/Point';
 import { Batman } from './batman/BatmanActor';
@@ -28,7 +28,8 @@ export class MazeScene extends ex.Scene implements IIsoScene {
         super.onInitialize(game);
         //const maze = Maze.read(batmanResources.Maze1.data);
         //const maze = Maze.read(batmanResources.MazeT.data);
-        const maze = Maze.read(batmanResources.MazeTest2.data);
+        //const maze = Maze.read(batmanResources.MazeTest2.data);
+        const maze = Maze.read(batmanResources.MazeTest3.data);
 
         this.isoMap = new ex.IsometricMap({
             pos: ex.vec(game.drawWidth / 2, 20),
@@ -38,6 +39,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
             rows: maze.Height,
             //renderFromTopOfGraphic: true
         });
+        //possible error, tileToWorld is not working ... this.isoMap.transform.scale = ex.vec(0.5, 0.5);
         this.isoMap.events.on('pointerdown', (evt: ex.PointerEvent) => {
             var tile = this.isoMap.getTileByPoint(evt.worldPos);
             if (tile)
@@ -84,23 +86,34 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     }
     roadsTile(maze: Maze) {
         var isoHelp = new IsoHelper(this.isoMap);
-        isoHelp.buildMaze(maze);
+        isoHelp.setTilesKind(maze);
         for (let tile of this.isoMap.tiles) {
-            let pos = ex.vec(tile.x, tile.y);
-            var c = maze.Get(pos);
-            if (c <= 1) {
+            let tilepos = ex.vec(tile.x, tile.y);
+            var c = maze.Get(tilepos);
+            if (c == MazeCell.WALL || c == MazeCell.VISITED) {
                 //roads
-                var points = getAroundPoints(pos).map(p => maze.Get(p) ?? MazeCell.VISITED);
+                var points = getAroundPoints(tilepos).map(p => maze.Get(p) ?? MazeCell.VISITED);
                 var ptstr = c + points.join("");
                 tile.addGraphic(batmanData.getTileSprite(ptstr));
             } else {
                 //buildings
                 tile.addGraphic(batmanData.Roads_Water);
                 var bld = new ex.Actor({
-                    pos:this.isoMap.tileToWorld(pos)
+                    pos: this.isoMap.tileToWorld(tilepos).add(ex.vec(0,-20))
                 });
-                let b = ex.randomIntInRange(0, batmanData.Buildings_Sheet.rows - 1, this.rnd);
-                let spr = batmanData.Buildings_Sheet.getSprite(0, b);
+                //probably error in ex ?!?
+                //bld.pos = bld.pos.scale(this.isoMap.transform.scale);//. apply(bld.pos);
+
+                var bi = getBuilding(c);
+                if (bi>=0) {
+                    var bc = bi % batmanData.Buildings_Sheet.columns;
+                    var br = Math.trunc(bi / batmanData.Buildings_Sheet.columns);
+                } else {
+                    var bc = ex.randomIntInRange(0, batmanData.Buildings_Sheet.columns - 1, this.rnd);
+                    var br = ex.randomIntInRange(0, batmanData.Buildings_Sheet.rows - 1, this.rnd);
+                }
+                //console.log('building', tilepos, c, bi, br, bc);
+                let spr = batmanData.Buildings_Sheet.getSprite(bc, br);
                 bld.graphics.use(spr);
                 bld.z = 99999;
                 this.add(bld);
@@ -125,7 +138,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
                 anchor: ex.vec(0, 0),
                 width: r.width,
                 height: r.height,
-                opacity:0.7
+                opacity: 0.7
             }
         );
         mazeActor.z = 999999;

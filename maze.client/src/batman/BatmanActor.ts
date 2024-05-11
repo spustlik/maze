@@ -24,10 +24,12 @@ export class Batman extends IsoActor {
         console.log(`moving #${this.name} to ${this.tilepos} (r:${rx},${ry})`); 
     }
     onMoveDone() {
-        if (!this.isMoving) {
-            //this.graphics.use(this.anims[2]);
+        setTimeout(() => {
+            if (this.isMoving)
+                return;
+            //boring
             this.setGraphicAnim(2);
-        }
+        },100);
     }
     update(g: ex.Engine, delta) {
         super.update(g, delta);

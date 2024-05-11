@@ -34,7 +34,7 @@ export class IsoHelper {
         //    }
         return tile.data.get(TILEKIND) as IsoTileKind;
     }
-    buildMaze(maze: Maze) {
+    setTilesKind(maze: Maze) {
         for (let tile of this.isoMap.tiles) {
             var pos = { x: tile.x, y: tile.y }; // what is in tile.pos ?!?! pos Returns the top left corner of the [[IsometricTile]] in world space
             var c = maze.Get(pos);           

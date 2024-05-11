@@ -62,7 +62,7 @@ export class IsoActor extends ex.Actor {
             return;
         this.scale = scale;
     }
-    setMoving(rx: number, ry: number) {
+    setMoveGraphic(rx: number, ry: number) {
         if (rx > 0 || ry > 0) {
             this.setGraphicAnim(0);
         } else {

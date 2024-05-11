@@ -10,8 +10,27 @@ export const MazeCell = {
     WALL: 0,
     EMPTY: null,
     VISITED: 1,
-    UNBREAKABLE: 2
+    UNBREAKABLE: 2,
+    _BUILDING: 100,
+    _MOB: 200,
+    _END: 300
 }
+
+/**
+ * returns building index or undefined
+ */
+export function getBuilding(c: TMazeCell) {
+    if (c >= MazeCell._BUILDING && c < MazeCell._MOB)
+        return c - MazeCell._BUILDING;
+}
+/**
+ * returns mob index or undefined
+ */
+export function getMob(c: TMazeCell) {
+    if (c >= MazeCell._MOB && c < MazeCell._END)
+        return c - MazeCell._MOB;
+}
+
 export class Maze {
     private data: TMazeCell[];
     constructor(
@@ -43,8 +62,8 @@ export class Maze {
         this.DrawVLine({ x: 0, y: 0 }, v);
         this.DrawVLine({ x: this.Width - 1, y: 0 }, v);
     }
-    public DrawFillRect(r:IRect, v: TMazeCell = MazeCell.WALL) {
-        for (var y = r.y; y < r.y+r.h; y++) {
+    public DrawFillRect(r: IRect, v: TMazeCell = MazeCell.WALL) {
+        for (var y = r.y; y < r.y + r.h; y++) {
             this.DrawHLine({ x: r.x, y }, v, r.w);
         }
     }
@@ -86,6 +105,9 @@ export class Maze {
             + lines.join('\n');
     }
     static read(s: string): Maze {
+        function chr(c: string) {
+            return c.charCodeAt(0);
+        }
         var lines = s.split('\n');
         lines = lines.filter(l => !l.startsWith('#')).filter(l => l.trim().length > 1);
         var r = new Maze(lines[0].length, lines.length);
@@ -93,8 +115,19 @@ export class Maze {
             var line = lines[y];
             for (var x = 0; x < line.length; x++) {
                 var c = line[x];
-                if (c != ' ')
-                    r.Set({ x, y }, Number(c));
+                if (c == ' ')
+                    continue;
+                var n = Number(c);
+                if (Number.isNaN(n)) {
+                    if (c >= 'a' && c <= 'z') {
+                        n = MazeCell._BUILDING + chr(c) - chr('a');
+                    } else if (c >= 'A' && c <= 'Z') {
+                        n = MazeCell._MOB + chr(c) - chr('A');
+                    }
+                }
+                if (Number.isNaN(n))
+                    n = MazeCell.EMPTY;
+                r.Set({ x, y }, n); //EMPTY or number(WALL,VISITED,UNBREAKABLE) or BUILDING++ or MOB++
             }
         }
         console.log('load maze', r)

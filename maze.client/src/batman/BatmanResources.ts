@@ -2,6 +2,7 @@ import * as ex from 'excalibur';
 import { StringSource } from '../extra/StringSource';
 import { replaceAll } from '../common/utils';
 import { MobType } from './BatmanMobActor';
+
 export const batmanResources = new class BatmanResources {
     Roads = new ex.ImageSource("src/assets/roads.png")
     Buildings = new ex.ImageSource("src/assets/buildings.png")
@@ -10,7 +11,7 @@ export const batmanResources = new class BatmanResources {
     MazeTest = new StringSource("src/assets/mazeTest.txt")
     Maze1 = new StringSource("src/assets/maze1.txt")
     MazeTest2 = new StringSource("src/assets/mazeTest2.txt")
-
+    MazeTest3 = new StringSource("src/assets/mazeTest3.txt")
 }
 /*
 ISOMETRIC VIEW
@@ -28,7 +29,7 @@ export const batmanData = new class BatmanData {
     Roads_Water = this.Roads_Sheet.getSprite(0, 13);
     Buildings_Sheet = ex.SpriteSheet.fromImageSource({
         image: batmanResources.Buildings,
-        grid: { columns: 1, rows: 49, spriteWidth: 133, spriteHeight: 130 }
+        grid: { columns: 8, rows: 3, spriteWidth: 100, spriteHeight: 85 }
     });
     Batman_Sheet = ex.SpriteSheet.fromImageSource({
         image: batmanResources.Batman,
@@ -52,7 +53,6 @@ export const batmanData = new class BatmanData {
             case MobType.PirateHead: return [get([19]), get([20])];
             default: throw new Error(`Unknown mob type ${mobtype}`);
         }
-
     }
 
     getTileSprite(s: string) {
