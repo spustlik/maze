@@ -1,4 +1,4 @@
-import { NextRandomInt } from "../common/common";
+import { NextRandom } from "../common/common";
 import { PlayCard, cards, suites } from "./playCards";
 
 export function GetDeckCards() {
@@ -12,17 +12,17 @@ export function GetDeckCards() {
     return result;
 }
 
-export function GetShuffledCards(nextRnd: NextRandomInt, cards: PlayCard[], count: number = 1) {
+export function GetShuffledCards(nextRndInt: NextRandom, cards: PlayCard[], count: number = 1) {
     const r: PlayCard[] = cards.concat([]);
     for (let c = 0; c < count; c++) {
         for (let i = 0; i < r.length; i++) {
-            const a = nextRnd(r.length - 1);
-            const b = nextRnd(r.length - 1);
+            const a = Math.trunc(nextRndInt(r.length - 1));
+            const b = Math.trunc(nextRndInt(r.length - 1));
             const swap = r[b];
             r[b] = r[a];
             r[a] = swap;
         }
     }
-    console.log('shuffled #' + count, cards, r.map(x=>x.toString()));
+    //console.log('shuffled #' + count, cards, r.map(x=>x.toString()));
     return r;
 }

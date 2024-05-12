@@ -1,5 +1,5 @@
 ﻿
-export type NextRandomInt = (maxInclusive: number) => number;
+export type NextRandom = (maxInclusive: number) => number;
 
 export function dd(x: any) {
     return JSON.parse(JSON.stringify(x));

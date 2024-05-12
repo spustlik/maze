@@ -1,6 +1,6 @@
 import { PlayCard, ctos, getNextCard, isRedCard } from "./playCards";
 import * as Deck from './Deck';
-import { NextRandomInt, delayAsync, insertItem, lastItem, max, orderBy, removeItem } from "../common/common";
+import { NextRandom, delayAsync, insertItem, lastItem, max, orderBy, removeItem } from "../common/common";
 
 
 type PlayStack = PlayCard[];
@@ -104,7 +104,7 @@ export class DeskBoard {
         }
         this.packet.push(PlayCard.Empty());
     }
-    public init(rnd:NextRandomInt) {
+    public init(rnd:NextRandom) {
         let deck = Deck.GetDeckCards();
         deck = Deck.GetShuffledCards(rnd, deck, 100);
         for (let i = 0; i < 7; i++) {
