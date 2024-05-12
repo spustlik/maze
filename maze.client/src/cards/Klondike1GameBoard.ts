@@ -1,6 +1,6 @@
 import { PlayCard, ctos, getNextCard, isRedCard } from "./playCards";
-import * as Deck from './Deck';
 import { NextRandom, delayAsync, insertItem, lastItem, max, orderBy, removeItem } from "../common/common";
+import { getDeckCards, getShuffledCards } from "./deck";
 
 
 type PlayStack = PlayCard[];
@@ -56,13 +56,13 @@ export class DeskBoard {
 
     private dump(nolog: boolean = false) {
         const data = {
-            packet: this.packet.map(c => c + ' ' + ptos(this.getCardPos(c))),
+            packet: this.packet.map(c => c + ' ' + ptos(this.getCardWithPos(c).pos)),
             columns: this.columns,
             goals: this.goals,
             cards: this.cards,
             //ppacket: this.packet.map(c => this.getCardPos(c)),
-            pstacks: this.columns.map(s => s.map(x => this.getCardPos(x))),
-            pgoals: this.goals.map(g => g.map(x => this.getCardPos(x))),
+            pstacks: this.columns.map(s => s.map(x => this.getCardWithPos(x).pos)),
+            pgoals: this.goals.map(g => g.map(x => this.getCardWithPos(x).pos)),
         };
         let str = "";
         for (let g = 0; g < this.goals.length; g++) {
@@ -73,7 +73,7 @@ export class DeskBoard {
                 str += lastItem(this.goals[g]).toString();
             str += "\n";
         }
-        str += "columns:\n";
+        //str += "columns:\n";
         let maxlen = max(...this.columns.map(a => a.length));
         for (let col = 0; col < this.columns.length; col++) {
             for (let i = 0; i < maxlen; i++) {
@@ -86,13 +86,13 @@ export class DeskBoard {
             }
             str += "\n";
         }
-        str += "packet (reversed):\n";
-        for (let i = this.packet.length - 1; i>=0 ; i--) {
-            str += this.packet[i].toString() + " "; 
+        str += `packet reversed (cnt=${this.packet.length}):\n`;
+        for (let i = this.packet.length - 1; i >= Math.max(0, this.packet.length - 5); i--) {
+            str += this.packet[i].toString() + " ";
         }
         str += "\n";
         if (!nolog)
-            console.log('dump', str, JSON.parse(JSON.stringify(data)));
+            console.log('dump', "\n" + str, JSON.parse(JSON.stringify(data)));
         return data;
     }
     constructor() {
@@ -104,9 +104,9 @@ export class DeskBoard {
         }
         this.packet.push(PlayCard.Empty());
     }
-    public init(rnd:NextRandom) {
-        let deck = Deck.GetDeckCards();
-        deck = Deck.GetShuffledCards(rnd, deck, 100);
+    public init(rnd: NextRandom) {
+        let deck = getDeckCards();
+        deck = getShuffledCards(rnd, deck, 100);
         for (let i = 0; i < 7; i++) {
             for (let j = 0; j <= i; j++) {
                 const x = deck.pop();
@@ -131,36 +131,23 @@ export class DeskBoard {
         this.cards.push(...this.packet.map((c, i) => createCard(c, 'packet', 0, i)));
         this.fixPacket();
     }
-    public getCardWithPos(card: PlayCard) {
+    public getCardWithPos(card: PlayCard): PlayCardWithPos {
         const r = this.cards.find(x => x.card == card);
         if (!r)
-            throw new Error(`Card not ${card.card},${card.suite},${card.special} found`);
+            throw new Error(`Card ${card} not found`);
         return r;
     }
-    public getCardPos(card: PlayCard) {
-        const r = this.getCardWithPos(card);
-        if (!r)
-            throw new Error(`Card not ${card.card},${card.suite},${card.special} found`);
-        return r.pos;
-    }
-    private _addCard(c: PlayCard, stack: CardStackType, stackindex: number) {
-        function add(list: PlayStack) {
-            list.push(c);
-            return list;
-        }
+    private addCardToList(card: PlayCard, stack: CardStackType, stackindex: number) {
+        let list: PlayStack;
         switch (stack) {
-            case 'column':
-                return add(this.columns[stackindex]);
-            case 'goal':
-                return add(this.goals[stackindex]);
-            case 'packet':
-                return add(this.packet);
+            case 'column': list = this.columns[stackindex]; break;
+            case 'goal': list = this.goals[stackindex]; break;
+            case 'packet': list = this.packet; break;
             default:
                 throw new Error('Unknown stack type');
         }
-    }
-    private addCardToList(card: PlayCard, stack: CardStackType, stackindex: number) {
-        const list = this._addCard(card, stack, stackindex);
+        list.push(card);
+
         const r: PlayCardWithPos = {
             card,
             pos: { stack: stack, stackindex: stackindex, cardindex: list.length - 1 }
@@ -187,7 +174,7 @@ export class DeskBoard {
             }
         }
     }
-    moveCard(c: PlayCardWithPos, nstack: CardStackType, nsindex: number) {
+    private moveCard(c: PlayCardWithPos, nstack: CardStackType, nsindex: number) {
         //console.log('moveCard', { c, nstack, nindex });
         this.removeCard(c);
         const newcard = this.addCardToList(c.card, nstack, nsindex); //not needed to push to this.cards, because it already exists
@@ -222,7 +209,7 @@ export class DeskBoard {
         const last3 = this.packet.splice(Math.max(this.packet.length - 3, 0) + 1, 3);
         insertItem(this.packet, 1, ...last3);
         this.fixPacket();
-        console.log('packetRotate', this.packet.map(c=>c.isSame(this._lastPacketCard) ? '{'+c+'}':c).join('; '));
+        console.log('packetRotate', this.packet.map(c => c.isSame(this._lastPacketCard) ? '{' + c + '}' : c).join('; '));
         this.checkGameOver();
     }
     public packetCardClick(x: PlayCardWithPos) {
@@ -238,10 +225,10 @@ export class DeskBoard {
             this.moveCard(c, 'goal', goalStack.index);
         }
         else {
-            const stpos = this.getStackNextForCard(c.card);
+            const stpos = this.getNextColumnForCard(c.card);
             if (stpos) {
                 //first or single
-                this.ensureStackFirst(stpos);
+                this.ensureColumnFirst(stpos);
                 this.moveCard(c, 'column', stpos.index);
                 this.fixColumn(stpos.index);
             } else {
@@ -254,31 +241,29 @@ export class DeskBoard {
         //console.log('packet', this.dump(true).packet);
     }
 
-
     columnCardClick(c: PlayCardWithPos) {
         if (c.card.special == 'x')
             return;
         if (c.card.card == 'k' && c.card.special == null) {
             //click to columns with not backed KING, move it to empty stack
-            const emptyColumns = this.columns
-                .map((x, i) => ({ index: i, stack: x }))
-                .filter(x => x.stack.length == 1 && x.stack[0].special == 'x');
+            let emptyColumns = this.columns
+                .map((x, i) => ({ index: i, column: x }))
+                .filter(x => x.column.length == 1 && x.column[0].special == 'x');
             if (emptyColumns.length > 0) {
                 const cstack = this.columns[c.pos.stackindex];
-                this.ensureStackFirst(emptyColumns[0]);
+                this.ensureColumnFirst(emptyColumns[0]);
                 const movePack = cstack.splice(c.pos.cardindex);
                 //removeItem(emptyStacks, emptyStacks[0]);
                 movePack.forEach(x => {
                     this.moveCard(this.getCardWithPos(x), 'column', emptyColumns[0].index);
                 });
-
             }
             return;
         }
         if (lastItem(this.columns[c.pos.stackindex]) != c.card)
             return; // only last cards in stack can be clicked
-        const goalSuiteStack = this.getGoalStackForCard(c.card);
-        //console.log('found goal of suite ' + x.card.suite, { s:dd(goalSuiteStack), goals: dd(this.goals) });
+        let goalSuiteStack = this.getGoalStackForCard(c.card);
+        console.log('found goal for suite ' + c.card.suite, { s: goalSuiteStack, goals: this.goals });
         if (goalSuiteStack) {
             //this.removeCard(x);
             //goalSuiteStack.push(x.card);
@@ -289,7 +274,7 @@ export class DeskBoard {
         }
         //if not possible to add to goal, try add to another stack
         //TODO: first to right?
-        const stack = this.getStackNextForCard(c.card);
+        let stack = this.getNextColumnForCard(c.card);
         if (stack) {
             //first or single
             this.moveCard(c, 'column', stack.index);
@@ -297,10 +282,10 @@ export class DeskBoard {
         }
         console.warn('Cannot find suitable goal stack');
     }
-    getStackNextForCard(c: PlayCard) {
-        function isNextCardInStack(s: PlayStack, c: PlayCard): boolean {
+    getNextColumnForCard(c: PlayCard): { column: PlayStack, index: number } {
+        function isNextCardInColumn(s: PlayStack, c: PlayCard): boolean {
             //llog('isNextInStack', s, c);
-            const last = lastItem(s);
+            let last = lastItem(s);
             if (last && last.special == 'x' && c.card == 'k')
                 return true; //KING to empty stack
             if (!last || last.special == 'x')
@@ -312,30 +297,30 @@ export class DeskBoard {
             return true;
         }
 
-        const possibleStacks = this.columns
-            .map((s, i) => ({ stack: s, index: i }))
-            .filter(x => isNextCardInStack(x.stack, c));
+        let possibleColumns = this.columns
+            .map((s, i) => ({ column: s, index: i }))
+            .filter(x => isNextCardInColumn(x.column, c));
         //console.warn('possiblestacks', possibleStacks);
-        return possibleStacks[0];
+        return possibleColumns[0];
     }
 
-    getGoalStackForCard(c: PlayCard) {
-        const goalData = this.goals
+    getGoalStackForCard(c: PlayCard): { goalstack: PlayStack, index: number, first: PlayCard } {
+        let goalData = this.goals
             .map((x, i) => ({ goalstack: x, index: i, first: x[0] }));
         if (c.card == 'a' && c.special == null) {
             // only A can be added first
-            const emptyStack = goalData.find(x => x.first.special == 'x'); // where first card of goal is empty
+            let emptyStack = goalData.find(x => x.first.special == 'x'); // where first card of goal is empty
             return emptyStack;
         }
 
-        const goalSuiteStack = goalData
+        let goalSuiteStack = goalData
             .find(x => x.first.special == null && x.first.suite == c.suite);
         if (!goalSuiteStack) {
             return;
         }
         //console.log('getGoalStackForCard', { x, goalSuiteStack });
         //check, if it is possible to add it to goal
-        const last = lastItem(goalSuiteStack.goalstack);
+        let last = lastItem(goalSuiteStack.goalstack);
         if (!last || last.suite != c.suite || last.special != null || getNextCard(last) != c.card)
             return;
         if (c.card == 'k') {
@@ -349,7 +334,7 @@ export class DeskBoard {
         if (goalstack[0].special == 'x')
             goalstack.splice(0); //remove empty card
     }
-    public isGameOver() {
+    public isGameOver(): boolean {
         //TODO: check if there is no more possible moves ?
         //TODO: packet rotates
         if (this.packetRotates >= 3)
@@ -391,9 +376,9 @@ export class DeskBoard {
             this.cards.push(c);
         }
     }
-    private ensureStackFirst(a: { stack: PlayStack, index: number }) {
-        if (a.stack.length == 1 && a.stack[0].special == 'x') {
-            a.stack.splice(0, 1);
+    private ensureColumnFirst(a: { column: PlayStack, index: number }) {
+        if (a.column.length == 1 && a.column[0].special == 'x') {
+            a.column.splice(0, 1);
             const cp = this.cards.find(x =>
                 x.pos.stack == 'column'
                 && x.pos.stackindex == a.index

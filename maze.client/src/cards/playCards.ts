@@ -34,7 +34,7 @@ export function getPreviousCard(c: PlayCard): PlayCardNumber | undefined {
 export function getNextCard(c: PlayCard): PlayCardNumber | undefined {
     const i = cards.indexOf(c.card);
     if (i >= 0)
-        return cards[i + 1];
+        return cards[i + 1]; // K-> undefined
 }
 export function isRedCard(suite: PlayCardSuite) {
     return suite == 'h' || suite == 'd';
@@ -46,11 +46,11 @@ export function suiteStr(s: PlayCardSuite) {
     }
     return map[s];
 }
-export function ctos(c: PlayCard, flipped: boolean = false) {
+export function ctos(c: PlayCard, showFlipped: boolean = false) {
     if (c.special == "x")
         return "*";
     let s = `${c.card.toUpperCase()}${suiteStr(c.suite)}`
-    if (c.special == "b" || flipped)
+    if (c.special == "b" && showFlipped)
         return "!" + s;
     return s;
 }

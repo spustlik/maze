@@ -1,70 +1,8 @@
 import * as ex from 'excalibur';
 import { DeskBoard, PlayCardWithPos } from './Klondike1GameBoard';
-import { PlayCard, isRedCard, suiteStr } from './playCards';
+import { CardActor } from './cardActor';
+import { PlayCard } from './playCards';
 
-
-class CardActor extends ex.Actor {
-    card: PlayCardWithPos;
-    constructor(config: ex.ActorArgs & { card: PlayCardWithPos }) {
-        super(config);
-        this.card = config.card;
-    }
-    onInitialize(game: ex.Engine) {
-        super.onInitialize(game);
-        const c = this.card.card;
-        function createRect() {
-            return new ex.Rectangle({
-                width: 100,
-                height: 150,
-                strokeColor: ex.Color.Black,
-                color: ex.Color.White
-            });
-        }
-        function createText() {
-            return new ex.Text({
-                text: `${c.card.toUpperCase()}${suiteStr(c.suite)}`,
-                font: new ex.Font({ bold: true, size: 50 }),
-                color: isRedCard(c.suite) ? ex.Color.Red : ex.Color.Black,
-                //width: r.width
-            });
-        }
-
-        {
-            let g = new ex.GraphicsGroup({
-                members: [
-                    { graphic: createRect(), offset: ex.vec(0, 0) },
-                    { graphic: createText(), offset: ex.vec(10, 10) }
-                ]
-            });
-            this.graphics.add('NORMAL', g);
-        }
-        {
-            let g = createRect();
-            g.color = ex.Color.fromHex('#c0c0ff');
-            this.graphics.add('x', g);
-        }
-        {
-            let r = createRect();
-            r.color = ex.Color.LightGray;
-            let c = new ex.Circle({
-                radius: r.width / 2,
-                //strokeColor: ex.Color.Orange,
-                color: ex.Color.Orange
-            });
-            let g = new ex.GraphicsGroup({
-                members: [
-                    { graphic: r, offset: ex.vec(0, 0) },
-                    { graphic: c, offset: ex.vec(0, 0), }
-                ]
-            });
-            this.graphics.add('b', g);
-        }
-    }
-    update(game: ex.Engine, delta) {
-        super.update(game, delta);
-        this.graphics.use(this.card.card.special || 'NORMAL');
-    }
-}
 
 class CardsScene extends ex.Scene {
     board: DeskBoard
@@ -73,8 +11,24 @@ class CardsScene extends ex.Scene {
         this.board = new DeskBoard();
         var rnd = new ex.Random(1234);
         this.board.init((max) => ex.randomIntInRange(0, max, rnd));
-        this.createActors();
-        this.updateActors();
+        //this.createActors();
+        //this.updateActors();
+
+        {
+            let a = this.addCardActor(new PlayCard('s', '9'));
+            a.pos = ex.vec(100, 100);
+        }
+        {
+            let a = this.addCardActor(new PlayCard('d', '7'));
+            a.pos = ex.vec(300, 100);
+            a.z = 99;
+        }
+        {
+            let a = this.addCardActor(new PlayCard('c', 'a'));
+            a.pos = ex.vec(300, 140);
+            a.z = 100;
+        }
+
     }
     update(game: ex.Engine, delta) {
         super.update(game, delta);
@@ -85,21 +39,55 @@ class CardsScene extends ex.Scene {
     createActors() {
         this.board.cards
             .forEach(c => {
-                let actor = this.findActors(x => x.card == c)[0];
+                let actor = this.findActors(x => x.card == c.card)[0];
                 if (!actor) {
-                    actor = new CardActor({ card: c });
-                    actor.events.on('pointerdown', (evt: ex.PointerEvent) => {
-                        this.onCardClick(actor, c, evt);
-                    })
-                    //actor.offset = ex.vec(0, 0);
-                    actor.anchor = ex.vec(0, 0);
-                    this.add(actor);
+                    actor = this.addCardActor(c.card);
                 }
             });
     }
+    private addCardActor(card: PlayCard) {
+        let actor = new CardActor({
+            card: card,
+            width: 100, height: 150,
+            anchor: ex.vec(0, 0),
+            offset: ex.vec(0, 0)
+        });
+
+        //pointerenter is thru z-index
+        actor.collider.useBoxCollider(actor.width, actor.height, ex.vec(0, 0));
+        actor.pointer.useColliderShape = true;
+        actor.pointer.useGraphicsBounds = false;
+
+        //pointerenter is thru z-index, 
+        //pointermove works but leave is not right called
+        //actor.pointer.useGraphicsBounds = true;
+        
+        actor.events.on('pointermove', (evt) => {
+        //    actor.graphics.use('hover');
+        //    evt.cancel(); //not working
+        });
+        actor.events.on('pointerenter', (evt) => {
+            actor.graphics.use('hover');
+            evt.cancel(); //not working
+        });
+        actor.events.on('pointerleave', (evt) => {
+            actor.graphics.use('normal');
+            // this is working ok, but not helping: 
+            //evt.cancel();
+        });
+        actor.events.on('pointerdown', (evt: ex.PointerEvent) => {
+            console.log('pointer down', actor,evt);
+            this.onCardClick(actor, card, evt);
+            evt.cancel();
+        });
+        this.add(actor);
+        return actor;
+    }
+
     updateActors() {
         for (let ac of this.findActors(x => true)) {
             this.setCardPos(ac);
+            ac.graphics.use(ac.card.special || 'normal');
         }
     }
     setCardPos(actor: CardActor) {
@@ -108,11 +96,10 @@ class CardsScene extends ex.Scene {
         const CARDHEIGHT = CARDWIDTH * 1.5;
         const SPEED = 500;
         const card = actor.card;
-        const pos = card.pos;
+        const pos = this.board.getCardWithPos(card)?.pos;
 
         function move(vec: ex.Vector) {
-            if (!actor.motion.vel.equals(ex.Vector.Zero))
-            {
+            if (!actor.motion.vel.equals(ex.Vector.Zero)) {
                 //postpone
                 //console.log('postponing move');
                 actor.actions.callMethod(() => move(vec));
@@ -124,7 +111,7 @@ class CardsScene extends ex.Scene {
                 .callMethod(() => actor.z = 999)
                 .moveTo(vec, SPEED)
                 .callMethod(() => actor.z = pos.cardindex)
-                //.callMethod(()=>console.log('card moved '+card.card));
+            //.callMethod(()=>console.log('card moved '+card.card));
             /*
             ex.coroutine(this, function* () {
                 let elapsed = 0;
@@ -135,7 +122,7 @@ class CardsScene extends ex.Scene {
         }
         switch (pos.stack) {
             case 'column': {
-                    move(ex.vec(CARDWIDTH * pos.stackindex, CARDHEIGHT + 20 + pos.cardindex * 20));
+                move(ex.vec(CARDWIDTH * pos.stackindex, CARDHEIGHT + 20 + pos.cardindex * 20));
                 break;
             }
             case 'goal': {
@@ -158,9 +145,10 @@ class CardsScene extends ex.Scene {
                 throw "Unknown stack type " + pos.stack;
         }
     }
-    onCardClick(actor: ex.Actor, card: PlayCardWithPos, evt: ex.Input.PointerEvent) {
-        console.log('card click', card, actor);
-        this.board.cardClick(card);
+    onCardClick(actor: ex.Actor, card: PlayCard, evt: ex.Input.PointerEvent) {
+        let cp = this.board.getCardWithPos(card);
+        console.log('card click', card, cp, actor);
+        this.board.cardClick(cp);
         this.updateActors();
     }
 }

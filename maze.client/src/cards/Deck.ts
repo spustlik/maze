@@ -1,7 +1,7 @@
 import { NextRandom } from "../common/common";
 import { PlayCard, cards, suites } from "./playCards";
 
-export function GetDeckCards() {
+export function getDeckCards() {
     //52 cards (13*4)
     const result: PlayCard[] = [];
     suites.forEach(suite => {
@@ -12,7 +12,7 @@ export function GetDeckCards() {
     return result;
 }
 
-export function GetShuffledCards(nextRndInt: NextRandom, cards: PlayCard[], count: number = 1) {
+export function getShuffledCards(nextRndInt: NextRandom, cards: PlayCard[], count: number = 1) {
     const r: PlayCard[] = cards.concat([]);
     for (let c = 0; c < count; c++) {
         for (let i = 0; i < r.length; i++) {
