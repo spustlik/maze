@@ -6,7 +6,7 @@ import { createButton, createImgButton, createSpriteButton } from './extra/ui';
 import { loadResources } from './extra/extra';
 import { uiResourceData, uiResources } from './extra/uiResources';
 import { createTestScene } from './sceneTests';
-import { text } from 'stream/consumers';
+import { createCardsScene } from './cards/sceneCards';
 
 
 
@@ -20,6 +20,7 @@ export class HomeScene extends ex.Scene {
         { key: 'breakout', title: 'Breakout', create: (g) => createBreakoutScene(g) },
         { key: 'mazegen', title: 'Maze generator', create: () => createMazeGeneratorScene() },
         { key: 'maze', title: 'Maze', create: () => createMazeScene() },
+        { key: 'cards', title: 'Cards', create: () => createCardsScene() },
         { key: 'tests', title: 'Tests', create: () => createTestScene() },
     ];
 

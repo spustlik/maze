@@ -2,7 +2,7 @@ import * as ex from 'excalibur';
 import { IsoActor } from './IsoActor';
 
 //copy of ex.MoveTo action, refactored
-class MyMoveTo implements ex.Action {
+export class MyMoveTo implements ex.Action {
     id: number
     private _tx: ex.TransformComponent;
     private _motion: ex.MotionComponent;
