@@ -62,16 +62,22 @@ export const uiResourceData = new class UiResourceData {
         image: uiResources.font,
         grid: { columns: 1, rows: 45, spriteWidth: 10, spriteHeight: 10 }
     });
-    Font = new ex.SpriteFont({
-        alphabet: '01234567890.- ©][ABCDEFGHIJKLMNOPQRSTUVWXYZ|/',
-        caseInsensitive: true,
-        spriteSheet: this._fontSpriteSheet,
-        spacing:1
-    });
+    Font = this.GetFont({});
+
     ButtonCloseSpriteSheet = ex.SpriteSheet.fromImageSource({
         image: uiResources.buttonClose,
         grid: { columns: 1, rows: 2, spriteWidth: 60, spriteHeight: 62 /*uiResources.buttonClose.height / 2*/ }
     });
+
+    public GetFont(args: { scale?: number }) {
+        return new ex.SpriteFont({
+            alphabet: '01234567890.- ©][ABCDEFGHIJKLMNOPQRSTUVWXYZ|/',
+            caseInsensitive: true,
+            spriteSheet: this._fontSpriteSheet,
+            scale: args.scale ? ex.vec(args.scale, args.scale) : null,
+            spacing: 1
+        });
+    }
 }
 
 

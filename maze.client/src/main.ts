@@ -34,6 +34,7 @@ function acquireLog() {
 const game = new ex.Engine({
     width: 1024,
     height: 600,
+    pixelArt: true,
 });
 
 const home = createSceneHome(game);

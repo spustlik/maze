@@ -6,11 +6,11 @@ export class CardActor extends ex.Actor {
     constructor(config: ex.ActorArgs & { card: PlayCard; }) {
         super(config);
         this.card = config.card;
+        this.createGraphics(); //maybe in init
     }
     onInitialize(game: ex.Engine) {
         super.onInitialize(game);
-        this.createGraphics();
-        this.graphics.use(this.card.special || 'normal');
+        this.updateGraphics();
     }
     private createGraphics() {
         const c = this.card;
@@ -43,15 +43,16 @@ export class CardActor extends ex.Actor {
         }
         {
             let r = createRect();
-            r.strokeColor = ex.Color.Red;
+            r.strokeColor = ex.Color.Blue;
             r.lineWidth = 10;
-            let g = new ex.GraphicsGroup({
-                members: [
-                    { graphic: r, offset: ex.vec(0, 0) },
-                    { graphic: createText(), offset: ex.vec(10, 10) }
-                ]
-            });
-            this.graphics.add('hover', g);
+            r.color = ex.Color.Transparent;
+            //let g = new ex.GraphicsGroup({
+            //    members: [
+            //        { graphic: r, offset: ex.vec(0, 0) },
+            //        //{ graphic: createText(), offset: ex.vec(10, 10) }
+            //    ]
+            //});
+            this.graphics.add('hover', r);
         }
         {
             //empty
@@ -76,6 +77,22 @@ export class CardActor extends ex.Actor {
             });
             this.graphics.add('b', g);
         }
+    }
+    updateGraphics(hover?: boolean) {
+        var g = this.card.special;
+        if (!g)
+            g = 'normal';
+        var std = this.graphics.graphics[g];
+        if (!std) {
+            console.warn('?graphics ' + g, this.graphics.getNames());
+            return;
+        }
+        if (hover) {
+            std = new ex.GraphicsGroup({
+                members: [std, this.graphics.graphics['hover']]
+            });
+        }
+        this.graphics.use(std);
     }
 
     update(game: ex.Engine, delta) {

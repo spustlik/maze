@@ -24,7 +24,7 @@ export class PlayCard implements PlayCardLike {
         return ctos(this, true);
     }
     public isSame(c: PlayCard) {
-        return c.suite == this.suite && c.card == this.card;
+        return c && c.suite == this.suite && c.card == this.card;
     }
 }
 

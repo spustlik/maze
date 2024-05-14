@@ -2,6 +2,7 @@ import * as ex from 'excalibur';
 import { DeskBoard, PlayCardWithPos } from './Klondike1GameBoard';
 import { CardActor } from './cardActor';
 import { PlayCard } from './playCards';
+import { ModalDialog } from '../extra/ui';
 
 
 class CardsScene extends ex.Scene {
@@ -11,35 +12,32 @@ class CardsScene extends ex.Scene {
         this.board = new DeskBoard();
         var rnd = new ex.Random(1234);
         this.board.init((max) => ex.randomIntInRange(0, max, rnd));
-        //this.createActors();
-        //this.updateActors();
-
-        {
-            let a = this.addCardActor(new PlayCard('s', '9'));
-            a.pos = ex.vec(100, 100);
-        }
-        {
-            let a = this.addCardActor(new PlayCard('d', '7'));
-            a.pos = ex.vec(300, 100);
-            a.z = 99;
-        }
-        {
-            let a = this.addCardActor(new PlayCard('c', 'a'));
-            a.pos = ex.vec(300, 140);
-            a.z = 100;
-        }
-
+        this.createActors();
+        this.updateActors();
+        //this.addTestActors();
     }
     update(game: ex.Engine, delta) {
         super.update(game, delta);
     }
-    findActors(predicate: (a: CardActor) => boolean) {
+    addTestActors() {
+        let a = this.addCardActor(new PlayCard('s', '9'));
+        a.pos = ex.vec(100, 100);
+        let b = this.addCardActor(new PlayCard('d', '7'));
+        b.pos = ex.vec(300, 100);
+        b.z = 99;
+        let c = this.addCardActor(new PlayCard('c', 'a'));
+        c.pos = ex.vec(300, 140);
+        c.z = 100;
+    }
+    getActors(predicate: (a: CardActor) => boolean = null) {
+        if (predicate == null)
+            predicate = a => true;
         return this.actors.filter(x => x instanceof CardActor && x.card).filter(predicate) as CardActor[];
     }
     createActors() {
         this.board.cards
             .forEach(c => {
-                let actor = this.findActors(x => x.card == c.card)[0];
+                let actor = this.getActors(x => x.card == c.card)[0];
                 if (!actor) {
                     actor = this.addCardActor(c.card);
                 }
@@ -53,30 +51,32 @@ class CardsScene extends ex.Scene {
             offset: ex.vec(0, 0)
         });
 
-        //pointerenter is thru z-index
-        actor.collider.useBoxCollider(actor.width, actor.height, ex.vec(0, 0));
-        actor.pointer.useColliderShape = true;
-        actor.pointer.useGraphicsBounds = false;
+        actor.pointer.useGraphicsBounds = true;
 
-        //pointerenter is thru z-index, 
-        //pointermove works but leave is not right called
-        //actor.pointer.useGraphicsBounds = true;
-        
         actor.events.on('pointermove', (evt) => {
-        //    actor.graphics.use('hover');
-        //    evt.cancel(); //not working
-        });
-        actor.events.on('pointerenter', (evt) => {
-            actor.graphics.use('hover');
+            var pointed = this
+                .getActors()
+                .filter(a => a.graphics.bounds.contains(evt.screenPos));
+            //remove hover from me and behind me
+            //pointed
+            //    .filter(a => a.z <= actor.z)
+            //    .forEach(a => a.updateGraphics());
+            //remove hover from all, but me
+            this.getActors(a => a != actor).forEach(a => a.updateGraphics());
+            //there are some in front of me
+            if (pointed.filter(a => a.z > actor.z).length > 0) {
+                return;
+            }
+
+            actor.updateGraphics(true);
             evt.cancel(); //not working
         });
         actor.events.on('pointerleave', (evt) => {
-            actor.graphics.use('normal');
-            // this is working ok, but not helping: 
+            actor.updateGraphics();
             //evt.cancel();
         });
         actor.events.on('pointerdown', (evt: ex.PointerEvent) => {
-            console.log('pointer down', actor,evt);
+            console.log('pointer down', actor, evt);
             this.onCardClick(actor, card, evt);
             evt.cancel();
         });
@@ -85,16 +85,16 @@ class CardsScene extends ex.Scene {
     }
 
     updateActors() {
-        for (let ac of this.findActors(x => true)) {
+        for (let ac of this.getActors(x => true)) {
             this.setCardPos(ac);
-            ac.graphics.use(ac.card.special || 'normal');
+            ac.updateGraphics();
         }
     }
     setCardPos(actor: CardActor) {
         const CARDCOLS = 10;
         const CARDWIDTH = this.engine.drawWidth / CARDCOLS;
         const CARDHEIGHT = CARDWIDTH * 1.5;
-        const SPEED = 500;
+        const SPEED = 1000;
         const card = actor.card;
         const pos = this.board.getCardWithPos(card)?.pos;
 
@@ -145,11 +145,27 @@ class CardsScene extends ex.Scene {
                 throw "Unknown stack type " + pos.stack;
         }
     }
-    onCardClick(actor: ex.Actor, card: PlayCard, evt: ex.Input.PointerEvent) {
+    async onCardClick(actor: ex.Actor, card: PlayCard, evt: ex.Input.PointerEvent) {
         let cp = this.board.getCardWithPos(card);
         console.log('card click', card, cp, actor);
-        this.board.cardClick(cp);
-        this.updateActors();
+        try {
+            this.board.cardClick(cp);
+            var state = this.board.getGameOverState();
+            if (state != null)
+            {
+                let dlg = new ModalDialog(this, {
+                    text: state ? 'YOU WIN!' : 'YOU LOSE..',
+                    buttons: [
+                        { text: 'Ok', click: () => true }]
+                });
+                this.add(dlg);
+                await dlg.showModal();
+            }
+            this.updateActors();
+        }
+        catch (e) {
+            console.error('Error in cardclick', e);
+        }
     }
 }
 

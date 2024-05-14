@@ -210,7 +210,6 @@ export class DeskBoard {
         insertItem(this.packet, 1, ...last3);
         this.fixPacket();
         console.log('packetRotate', this.packet.map(c => c.isSame(this._lastPacketCard) ? '{' + c + '}' : c).join('; '));
-        this.checkGameOver();
     }
     public packetCardClick(x: PlayCardWithPos) {
         if (x.card.special == 'x') {
@@ -323,9 +322,6 @@ export class DeskBoard {
         let last = lastItem(goalSuiteStack.goalstack);
         if (!last || last.suite != c.suite || last.special != null || getNextCard(last) != c.card)
             return;
-        if (c.card == 'k') {
-            this.checkGameOver();
-        }
         return goalSuiteStack;
     }
     removeGoalStackEmpty(goalstack: PlayStack) {
@@ -334,18 +330,13 @@ export class DeskBoard {
         if (goalstack[0].special == 'x')
             goalstack.splice(0); //remove empty card
     }
-    public isGameOver(): boolean {
+    public getGameOverState(): null | boolean {
         //TODO: check if there is no more possible moves ?
-        //TODO: packet rotates
         if (this.packetRotates >= 3)
+            return false;
+        if (this.goals.every(g => lastItem(g)?.card == 'k'))
             return true;
-        return this.goals.every(g => lastItem(g)?.card == 'k');
-    }
-    public checkGameOver() {
-        if (this.isGameOver()) {
-            //TODO: emit some event
-            throw new Error('Game over');
-        }
+        return null;
     }
     private fixColumn(index: number) {
         const s = this.columns[index];
