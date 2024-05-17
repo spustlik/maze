@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Layouts>
+  <File FileName="CARDS2.PSD" Zoom="1" Offset="0">
+    <View Type="ImageSheetViewPart">
+      <Layout Columns="3" Rows="3" Width="1" Height="0" Count="0" CombinatorText="a:1,2&#xD;&#xA;b:3,4,5&#xD;&#xA;c:6,7&#xA;#-------&#xA;1,2&#xA;3,4,5&#xA;6,7" ShowLabels="true" />
+    </View>
+  </File>
+  <File FileName="CARDS4.PSD" Zoom="1" Offset="0">
+    <View Type="ImageSheetViewPart">
+      <Layout Columns="0" Rows="0" Width="0" Height="0" Count="0" ShowLabels="true" />
+    </View>
+  </File>
+  <File FileName="TEST.PSD" Zoom="2" Offset="0">
+    <View Type="ImageSheetViewPart">
+      <Layout Columns="1" Rows="0" Width="0" Height="0" Count="0" ShowLabels="true" />
+    </View>
+  </File>
+  <File FileName="CARDS.PSD" Zoom="1" Offset="0">
+    <View Type="ImageSpriteViewPart" Width="300">
+      <Layout Columns="1" Width="0" Height="0" ShowLabels="true" />
+    </View>
+    <View Type="ImageSheetViewPart">
+      <Layout Columns="1" Rows="0" Width="0" Height="0" Count="0" ShowLabels="true" />
+    </View>
+  </File>
+</Layouts>
