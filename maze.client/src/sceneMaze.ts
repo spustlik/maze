@@ -22,7 +22,7 @@ export class MazeScene extends ex.Scene implements IIsoScene {
     onPreLoad(loader: ex.DefaultLoader) {
         console.log('onPreload-maze');
         super.onPreLoad(loader);
-        loadResources(loader, batmanResources);
+        loadResources(loader, batmanResources)
     }
     onInitialize(game: ex.Engine) {
         super.onInitialize(game);

@@ -7,6 +7,7 @@ import { loadResources } from './extra/extra';
 import { uiResourceData, uiResources } from './extra/uiResources';
 import { createTestScene } from './sceneTests';
 import { createCardsScene } from './cards/sceneCards';
+import { createFiguresHomeScene } from './figures/sceneFiguresHome';
 
 
 
@@ -17,10 +18,11 @@ type SceneDef = {
 };
 export class HomeScene extends ex.Scene {
     scenes: SceneDef[] = [
-        { key: 'breakout', title: 'Breakout', create: (g) => createBreakoutScene(g) },
+        //{ key: 'breakout', title: 'Breakout', create: (g) => createBreakoutScene(g) },
         { key: 'mazegen', title: 'Maze generator', create: () => createMazeGeneratorScene() },
         { key: 'maze', title: 'Maze', create: () => createMazeScene() },
         { key: 'cards', title: 'Cards', create: () => createCardsScene() },
+        { key: 'figures', title: 'Figures', create: () => createFiguresHomeScene() },
         { key: 'tests', title: 'Tests', create: () => createTestScene() },
     ];
 
@@ -115,12 +117,12 @@ export class HomeScene extends ex.Scene {
             pos: ex.vec(game.drawWidth - 65, 5),
             click: () => {
                 window.location.hash = '';
-
                 game.goToScene('root');
             },            
             sprite: uiResourceData.ButtonCloseSpriteSheet.getSprite(0, 0),
-            spriteHover: uiResourceData.ButtonCloseSpriteSheet.getSprite(0,1)
+            spriteHover: uiResourceData.ButtonCloseSpriteSheet.getSprite(0, 1),
         });
+        homeBtn.name = 'HOME';
         homeBtn.z = Number.MAX_SAFE_INTEGER;
         instance.add(homeBtn);
 
