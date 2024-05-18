@@ -1,4 +1,8 @@
-﻿
+﻿export type MapType<K extends string | number | symbol, V> = {
+    [X in K]: V;
+};
+
+
 export type NextRandom = (maxInclusive: number) => number;
 
 export function dd(x: any) {

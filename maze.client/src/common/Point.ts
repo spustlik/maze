@@ -1,6 +1,4 @@
-﻿import { off } from "process";
-
-export type ICoordinates = { x: number, y: number };
+﻿export type ICoordinates = { x: number, y: number };
 export type IRect = {
     x: number,
     y: number,
@@ -25,17 +23,29 @@ export class Point implements ICoordinates {
     }
 }
 
+export function pt(x: number, y: number) {
+    return new Point(x, y);
+}
+export function ptround(c:ICoordinates) {
+    return pt(Math.round(c.x), Math.round(c.y));
+}
+export function ptrunc(c: ICoordinates) {
+    return pt(Math.trunc(c.x), Math.trunc(c.y));
+}
 export function addPoint(pt: ICoordinates, add: ICoordinates): ICoordinates {
     return new Point(pt.x + add.x, pt.y + add.y);
 }
 export function subtractPoint(pt: ICoordinates, sub: ICoordinates): ICoordinates {
     return new Point(pt.x - sub.x, pt.y - sub.y);
 }
+export function mulPoint(pt: ICoordinates, multiply: number) {
+    return new Point(pt.x * multiply, pt.y * multiply);
+}
 export function isSamePoint(p1: ICoordinates, p2: ICoordinates) {
     return p1.x == p2.x && p1.y == p2.y;
 }
 //warn: possible conflict with Excalibur Direction
-//warn: order of is importyant, see other functions
+//warn: order is important, see other functions
 export const enum PointDirection {
     Left = 0,
     Right = 1,
@@ -52,12 +62,20 @@ export function getDirectionVec(d: PointDirection) {
     ];
     return dirs[d];
 }
+/**
+ * @returns point in direction [d]
+ */
+export function getPointInDirection(pos: ICoordinates, d: PointDirection): ICoordinates {
+    const ofs = getDirectionVec(d);
+    return { x: pos.x + ofs.x, y: pos.y + ofs.y };
+}
 
-export function getPointsDirection(src: ICoordinates, dst: ICoordinates) {
+export function getPointsDirection___(src: ICoordinates, dst: ICoordinates) {
     var rx = dst.x - src.x;
     var ry = dst.y - src.y;
 
 }
+
 
 /**
  * @returns 4 points around [c], [offset] can be specified, it is not controlling bounds
@@ -79,18 +97,6 @@ export function getAroundPoints(c: ICoordinates, offset = 1) {
     //];
 }
 
-/**
- * @returns point in direction [d], it is not controlling bounds
- */
-export function getPointInDirection(pos: ICoordinates, d: PointDirection): ICoordinates {
-    const OFFSET_TABLE = [
-        { x: -1, y: 0 },
-        { x: 1, y: 0 },
-        { x: 0, y: -1 },
-        { x: 0, y: 1 }
-    ];
-    return { x: pos.x + OFFSET_TABLE[d].x, y: pos.y + OFFSET_TABLE[d].y };
-}
 
 export function isInRect(pt: ICoordinates, r: IRect) {
     return pt.x >= r.x && pt.x < r.x + r.w && pt.y >= r.y && pt.y < r.y + r.h;
