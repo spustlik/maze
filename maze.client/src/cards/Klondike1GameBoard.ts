@@ -385,7 +385,7 @@ export class DeskBoard {
             console.log(s, args);
         };
         let packetDeals = 3 * this.packet.length;
-        while (!this.isGameOver()) {
+        while (true) {
             await delayAsync(delay);
             //try packet -> goal
             const lastPacket = lastItem(this.packet);

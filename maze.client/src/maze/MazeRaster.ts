@@ -1,6 +1,6 @@
 ﻿import * as ex from 'excalibur';
 import { MazeCell, Maze } from './Maze.js';
-import { ICoordinates, isSamePoint } from './common/Point.js';
+import { ICoordinates, isSamePoint } from '../common/Point.js';
 
 abstract class CellRaster extends ex.Raster {
     constructor(private c_width: number, private c_height: number, private cellSize=6){

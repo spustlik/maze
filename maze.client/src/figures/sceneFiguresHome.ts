@@ -10,7 +10,7 @@ import { FiguresRules } from './figuresRules';
 enum FigureGameState {
     Start = 1,
     WaitForDice = 2,
-    DiceCalled = 3,
+    DiceCalled = 3, //waiting to select figure
 
     GameOver = 99,
     End = 99999,

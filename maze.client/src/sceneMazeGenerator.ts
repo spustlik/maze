@@ -1,8 +1,8 @@
 import * as ex from 'excalibur';
-import { Maze } from './Maze';
-import { MazeRaster } from './MazeRaster';
-import { MazeGenerator } from './MazeGenerator';
-import { generateRandomSeed } from './RandomGenerator';
+import { generateRandomSeed } from './common/RandomGenerator';
+import { MazeRaster } from './maze/MazeRaster';
+import { Maze } from './maze/Maze';
+import { MazeGenerator } from './maze/MazeGenerator';
 
 export function createMazeGeneratorScene() {
     const scene = new ex.Scene();

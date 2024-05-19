@@ -1,13 +1,13 @@
 import * as ex from 'excalibur';
-import { Maze, MazeCell, getBuilding } from './Maze';
-import { MazeRaster } from './MazeRaster';
-import { Point, getAroundPoints, subtractPoint } from './common/Point';
-import { Batman } from './batman/BatmanActor';
-import { BatmanMob } from './batman/BatmanMobActor';
-import { batmanData, batmanResources } from './batman/BatmanResources';
-import { IIsoScene, IsoActor } from './extra/IsoActor';
-import { IsoHelper, IsoTileKind } from './batman/IsoHelper';
-import { loadResources } from './extra/extra';
+import { Point, getAroundPoints, subtractPoint } from '../common/Point';
+import { Batman } from './BatmanActor';
+import { BatmanMob } from './BatmanMobActor';
+import { batmanData, batmanResources } from './BatmanResources';
+import { IIsoScene, IsoActor } from '../extra/IsoActor';
+import { IsoHelper, IsoTileKind } from './IsoHelper';
+import { loadResources } from '../extra/extra';
+import { Maze, MazeCell, getBuilding } from '../maze/Maze';
+import { MazeRaster } from '../maze/MazeRaster';
 
 
 export class MazeScene extends ex.Scene implements IIsoScene {

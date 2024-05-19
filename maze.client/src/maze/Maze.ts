@@ -1,4 +1,4 @@
-import { ICoordinates, IRect } from "./common/Point";
+import { ICoordinates, IRect } from "../common/Point";
 
 function trunc(c: ICoordinates): ICoordinates {
     return { x: Math.trunc(c.x), y: Math.trunc(c.y) };

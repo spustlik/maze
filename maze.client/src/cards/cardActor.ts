@@ -79,7 +79,7 @@ export class CardActor extends ex.Actor {
         }
     }
     updateGraphics(hover?: boolean) {
-        var g = this.card.special;
+        var g = this.card.special as string;
         if (!g)
             g = 'normal';
         var std = this.graphics.graphics[g];
