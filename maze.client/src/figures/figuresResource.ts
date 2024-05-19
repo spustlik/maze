@@ -100,16 +100,15 @@ class FiguresData {
         this._sheet({ image: figuresResources._D1, grid: { columns: 8, rows: 4, spriteWidth: 47, spriteHeight: 56 }, offset: ex.vec(-5, -17) }),
         this._sheet({ image: figuresResources._D7, grid: { columns: 8, rows: 4, spriteWidth: 60, spriteHeight: 62 }, offset: ex.vec(1, -16) }),
         this._sheet({ image: figuresResources._D8, grid: { columns: 8, rows: 4, spriteWidth: 78, spriteHeight: 87 }, offset: ex.vec(0, -5) }),
-        //green (2)
+        //green
         this._sheet({ image: figuresResources._D2, grid: { columns: 8, rows: 4, spriteWidth: 47, spriteHeight: 56 }, offset: ex.vec(-5, -17) }),
-        //yellow (1)
+        //yellow
         this._sheet({ image: figuresResources._D3, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 67 }, offset: ex.vec(0, -11) }),
         this._sheet({ image: figuresResources._D5, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 70 }, offset: ex.vec(1, -11) }),
-
-        //red (2)
+        //red
         this._sheet({ image: figuresResources._D4, grid: { columns: 8, rows: 4, spriteWidth: 56, spriteHeight: 60 }, offset: ex.vec(-1, -14) }),
 
-        //nakrajet na kousky, asi vodorovne, kazdy odjede najinou stranu
+        //nakrajet na kousky, asi vodorovne, kazdy odjede na jinou stranu
         //propadne se do zeme
         //rozpadne se jako sklo
         //teleport do nebe, teoreticky i UFO
@@ -133,7 +132,6 @@ class FiguresData {
             i = 4 + ex.randomIntInRange(0, 1);
         else if (c == 'R')
             i = 6 + ex.randomIntInRange(0, 0);
-        i = 6;
         return this.getDieAnimSpriteOptions(i, 50);
     }
     private _selection_Sheet = ex.SpriteSheet.fromImageSource({
