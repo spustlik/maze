@@ -30,9 +30,8 @@ export function createImgButton(text: string,
     const width = args.width ?? 240;
     if (!args.fontScale)
         args.fontScale = 2;
-    var { members, sprites } = uiResourceData.getBtnGraphics(width, args.height);
-    var g = new ex.GraphicsGroup({ members });
-    btn.graphics.add(g);
+    var gr = uiResourceData.getBtnGraphics(width, args.height);
+    btn.graphics.add(gr);
 
     let fnt = args.font ?? uiResourceData.Font;
     //args.font ?? new ex.Font({ bold: true, size: args.fontSize ?? 20 })
@@ -41,7 +40,7 @@ export function createImgButton(text: string,
 
     let x = 40;
     let y = 30;
-    let h = args.height ?? sprites[0].height;
+    let h = args.height ?? (gr.members[0] as ex.GraphicsGroup)[0].graphic.height;// sprites[0].height;
     if (args.valign) {
         y = h / 2 - measure.height;
     }
@@ -199,8 +198,8 @@ export class ModalDialog extends ex.ScreenElement {
             height: total_height
         });
         this.addChild(frame);
-        let { members, sprites } = uiResourceData.getBtnGraphics(frame.width, frame.height);
-        frame.graphics.add(new ex.GraphicsGroup({ members }));
+        let gr = uiResourceData.getBtnGraphics(frame.width, frame.height);
+        frame.graphics.add(gr);
 
         frame.addChild(lbl);
         frame.addChild(btns);

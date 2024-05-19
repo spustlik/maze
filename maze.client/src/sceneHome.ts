@@ -1,7 +1,6 @@
 import * as ex from 'excalibur';
-import { createBreakoutScene } from './sceneBreakout';
 import { createMazeGeneratorScene } from './sceneMazeGenerator';
-import { createMazeScene } from './sceneMaze';
+import { createMazeScene } from './batman/sceneBatmanMaze';
 import { createButton, createImgButton, createSpriteButton } from './extra/ui';
 import { loadResources } from './extra/extra';
 import { uiResourceData, uiResources } from './extra/uiResources';
@@ -50,9 +49,10 @@ export class HomeScene extends ex.Scene {
             const def = this.scenes[i];
 
             const btn = createImgButton(def.title, {
-                pos: ex.vec(20, 40 + i * 100),
-                height: 90,
+                pos: ex.vec(20, 40 + i * 90),
+                height: 82,
                 width: 400,
+                //font: new ex.Font({family:'Arial', size:12}),
                 colorHightlightFg: ex.Color.White,
                 click: () => this.gotoScene(game, def)
             });

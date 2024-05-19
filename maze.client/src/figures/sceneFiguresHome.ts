@@ -1,5 +1,5 @@
 import * as ex from 'excalibur';
-import { loadResources } from '../extra/extra';
+import { getScaledGraphics9, loadResources } from '../extra/extra';
 import { figuresData, figuresResources } from './figuresResource';
 import { pt, ptround } from '../common/Point';
 import { FiguresBoard } from './figuresBoard';
@@ -51,67 +51,95 @@ class FiguresHomeScene extends ex.Scene {
         this.initDice();
         this.initPlayers();
         this.initState();
+        this.initGui();
     }
-    update(game: ex.Engine, delta: number) {
-        super.update(game, delta);
-        this.updateDice();
-        this.updateKeyboard();
-        {
-            //center label
-            var measure = this.gameLabel.font.measureText(this.gameLabel.text);
-            measure = measure.scale(this.gameLabel.font.scale);
-            measure = measure.scale(this.gameLabel.scale);
-            this.gameLabel.offset = ex.vec(-measure.width / 2, -measure.height / 2);
+    initGui() {
+        let posY = 10;
+        let posX = 10;
+        const newLine = () => {
+            posX = 10;
+            //last actor is label, not button!
+            posY += 10 + this.actors.at(-2).graphics.bounds.height;
         }
-    }
-    updateKeyboard() {
-        const game = this.engine;
-        if (game.input.keyboard.wasPressed(ex.Keys.S)) {
-            const s = this.save();
-            window.localStorage.setItem('SAVE', s);
-            console.log('saved');
-            return;
-        }
-        if (game.input.keyboard.wasPressed(ex.Keys.L)) {
+        const createButton = (text: string, args: { color?: ex.Color, width?: number }, click: () => void) => {
+            let e = new ex.ScreenElement({ pos: ex.vec(posX, posY), name: text });
+            let w = args.width ?? 100;
+            let gup = getScaledGraphics9(figuresResources.Gui_Gray_Up, w, 30, 10, 10);
+            let gdown = getScaledGraphics9(figuresResources.Gui_Gray_Down, w, 30, 10, 10);
+            {
+                let font = figuresData.Font;
+                let lbl = new ex.Label({
+                    text,
+                    name:'LBL_'+text,
+                    font,
+                    color: args.color,
+                    pos: ex.vec(10, 5),
+                });
+                e.addChild(lbl);
+                e.graphics.use(gup);
+                e.on('pointerenter', () => { lbl.opacity = 0.6; });
+                e.on('pointerleave', () => { lbl.opacity = 1; });
+                e.on('pointerdown', () => { e.graphics.use(gdown); lbl.offset = ex.vec(3, 3); });
+                e.on('pointerup', () => { e.graphics.use(gup); lbl.offset = ex.vec(0, 0); click(); });
+            }
+            this.add(e);
+            posX += 10 + e.graphics.bounds.width;
+        };
+        createButton('LOAD', {}, () => {
             const s = window.localStorage.getItem('SAVE');
             console.log('loading');
             this.load(s); //call to updateState
-            return;
+        });
+        newLine();
+        createButton('SAVE', {}, () => {
+            const s = this.save();
+            window.localStorage.setItem('SAVE', s);
+            console.log('saved');
+        });
+        newLine();
+        for (let i = 0; i < FigureColors.length; i++) {
+            const c = FigureColors[i];
+            createButton(c, { color: figuresData.getExColor(c), width: 40 }, () => {
+                this.currentPlayerIndex = i;
+                this.updateState(FigureGameState.WaitForDice);
+                return
+            });
         }
-        if (game.input.keyboard.wasPressed(ex.Keys.Minus)
-            || game.input.keyboard.wasPressed(ex.Keys.NumSubtract)) {
+        newLine();
+        createButton('-', { width: 35 }, () => {
             let first = this.rules.getColorFigures(this.currentPlayerColor)[0];
             //this can throw errors
             let np = this.rules.getNextPos(first.position, -1);
             if (!np)
                 return;
             first.position = np;
-            return
-        }
-        if (game.input.keyboard.wasPressed(ex.Keys.Equal) /* + */
-            || game.input.keyboard.wasPressed(ex.Keys.NumAdd)) {
+        });
+        createButton('+', { width: 35 }, () => {
             let first = this.rules.getColorFigures(this.currentPlayerColor)[0];
             let np = this.rules.getNextPos(first.position, 1);
             if (!np)
                 return;
             //let path = this.board.getPathTo
             first.position = np;
-            return
+        });
+        newLine();
+        posX = this.engine.drawWidth - 300; 
+        posY = this.engine.drawHeight - 40;
+        for (let i = 0; i < 6; i++) {
+            createButton((i + 1).toString(), { width: 35 }, () => {
+                this.diceNumber = i + 1;
+            });
         }
-        const DICEKEYS = [ex.Keys.Key1, ex.Keys.Key2, ex.Keys.Key3, ex.Keys.Key4, ex.Keys.Key5, ex.Keys.Key6];
-        for (let k of DICEKEYS) {
-            if (game.input.keyboard.wasPressed(k)) {
-                this.diceNumber = DICEKEYS.indexOf(k) + 1;
-                return
-            }
-        }
-        const PLAYERKEYS = [ex.Keys.Q, ex.Keys.W, ex.Keys.E, ex.Keys.R];
-        for (let k of PLAYERKEYS) {
-            if (game.input.keyboard.wasPressed(k)) {
-                this.currentPlayerIndex = PLAYERKEYS.indexOf(k);
-                this.updateState(FigureGameState.WaitForDice);
-                return
-            }
+    }
+    update(game: ex.Engine, delta: number) {
+        super.update(game, delta);
+        this.updateDice();
+        {
+            //center label
+            var measure = this.gameLabel.font.measureText(this.gameLabel.text);
+            measure = measure.scale(this.gameLabel.font.scale);
+            measure = measure.scale(this.gameLabel.scale);
+            this.gameLabel.offset = ex.vec(-measure.width / 2, -measure.height / 2);
         }
     }
     initState() {

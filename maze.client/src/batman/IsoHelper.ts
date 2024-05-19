@@ -1,6 +1,6 @@
 import * as ex from 'excalibur';
 import { ICoordinates } from '../common/Point';
-import { Maze, MazeCell } from '../Maze';
+import { Maze, MazeCell } from '../maze/Maze';
 export enum IsoTileKind {
     WALL = 'WALL', ROAD = 'ROAD', CITY = 'CITY'
 }

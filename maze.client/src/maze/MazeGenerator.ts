@@ -1,6 +1,7 @@
 ﻿import { MazeCell, Maze } from './Maze';
-import { RandomGenerator } from './RandomGenerator';
-import { PointDirection, ICoordinates, Point, getAroundPoints, getPointInDirection, Rect, IRect, isRectIntersecting, getRectOffset } from './common/Point';
+import { RandomGenerator } from '../common/RandomGenerator';
+import { PointDirection, ICoordinates, Point, getAroundPoints, getPointInDirection, Rect, IRect, isRectIntersecting, getRectOffset }
+    from '../common/Point';
 
 export class MazeGenerator {
     rnd: RandomGenerator;

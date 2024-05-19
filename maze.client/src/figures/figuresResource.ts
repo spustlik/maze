@@ -22,8 +22,11 @@ export const figuresResources = new class BatmanResources {
     _Pointer = new ex.ImageSource(path + "pointer.png")
     //PlanMap = new StringSource(path + "plan.txt")
     _Selection = new ex.ImageSource(path + "selection.png")
+    //_Gui = new ex.ImageSource(path + "gui.png")
+    Gui_Gray_Up = new ex.ImageSource(path + "gui_gray_up.png")
+    Gui_Gray_Down = new ex.ImageSource(path + "gui_gray_down.png")
 }
-export const figuresData = new class FiguresData {
+class FiguresData {
     _Figures_Sheet = ex.SpriteSheet.fromImageSource({
         image: figuresResources.Figures,
         grid: { columns: 4, rows: 1, spriteWidth: 47, spriteHeight: 56 }
@@ -35,7 +38,7 @@ export const figuresData = new class FiguresData {
             //tint: ex.Color.Blue,
             shadow: { blur: 5, color: ex.Color.Black, offset: ex.vec(0, 0) }
         };
-        opts = Object.assign(opts,args)
+        opts = Object.assign(opts, args)
         return figuresResources._Font.toFont(opts);
     }
     Font = this.getFont();
@@ -119,4 +122,21 @@ export const figuresData = new class FiguresData {
         };
         return MAP[color];
     }
+    /*
+    private gs(src: ex.SourceView) {
+        let s = figuresResources._Gui.toSprite();
+        s.sourceView = src;
+        return s;
+    }
+    gui = {
+        radio: this.gs({ x: 1, y: 2, width: 23, height: 4 * 25 }),
+        redUp: this.gs({ x: 29, y: 2, width: 60, height: 32 }),
+        redDown: this.gs({ x: 29, y: 37, width: 60, height: 32 }),
+        greenFrame: this.gs({ x: 95, y: 5, width: 55, height: 56 }),
+        grayUp: this.gs({ x: 153, y: 3, width: 45, height: 34 }),
+        grayDown: this.gs({ x: 153, y: 39, width: 45, height: 34 }),
+        greenUp: this.gs({ x: 137, y: 182, width: 43, height: 33 }),
+    }*/
 }
+
+export const figuresData = new FiguresData();
