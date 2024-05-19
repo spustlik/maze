@@ -1,7 +1,5 @@
 import { ICoordinates, Point, PointDirection, addPoint, mulPoint, pt } from "../common/Point";
 import { MapType } from "../common/common";
-import * as ex from 'excalibur';
-import { FiguresBoard } from "./figuresBoard";
 
 export type FigureColor = 'R' | 'G' | 'B' | 'Y';
 export type FigureColorX = FigureColor | 'x';
@@ -46,11 +44,15 @@ export function oppo(d: FigDirection) {
 }
 
 export class FigurePos {
+    static readonly endOfPlan = 9 * 4;
     constructor(
-        public readonly color: FigureColor
+        public readonly color: FigureColor,
+        position?:number
     ) {
+        this._position = position ?? 0;
     }
-    private _position: number;
+    _position: number = 0;
+
     get isHome() { return this.home != undefined; }
     get isGoal() { return this.goal != undefined; }
     get isPlan() { return this.plan != undefined; }
@@ -60,41 +62,20 @@ export class FigurePos {
     set goal(v: number) { this._position = 100 + v; }
     get plan() { return (this._position < 50) ? this._position : undefined; }
     set plan(v: number) { this._position = v; }
+    equals(p: FigurePos): unknown {
+        return this._position == p._position;
+    }
     toString() {
-        return this.isHome ? 'home:' + this.home
-            : this.isPlan ? 'plan:' + this.plan
-                : this.isGoal ? 'goal:' + this.goal
-                    : '?' + this._position;
+        let s = `FIG:${this.color},`;
+        if (this.isHome)
+            s += `home:${this.home}`;
+        else if (this.isGoal)
+            s += `goal:${this.goal}`;
+        else if (this.isPlan)
+            s += `plan:${this.plan}`;
+        else
+            s += `?:${this._position}`;
+        return s;
     }
 }
 
-export class FigureActor extends ex.Actor {
-    constructor(color:FigureColor,index:number, args?: ex.ActorArgs) {
-        super(args);
-        this.position = new FigurePos(color);
-        this.position.home = index;
-        this.name = `player_${color}_${index}`;
-
-    }
-    private _isDirty: boolean = true;
-    public get isDirty() { return this._isDirty; }
-    private _tilepos: ICoordinates;
-    public get tilepos() { return this._tilepos; }
-    private _position: FigurePos;
-    public get position() { return this._position }
-    public set position(p: FigurePos) {
-        this._position = p;
-        this._isDirty = true;
-    }
-    public get board() { return ((this.scene as any).board as FiguresBoard); }
-
-    update(game: ex.Engine, delta: number) {
-        super.update(game, delta);
-        if (this.isDirty) {
-            this._isDirty = false;
-            this._tilepos = this.board.figPosToTile(this._position);
-            this.pos = this.board.tileToWorld(this.tilepos);
-            this.z = this.pos.y;
-        }
-    }
-}

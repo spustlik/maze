@@ -1,9 +1,11 @@
 import * as ex from 'excalibur';
 import { loadResources } from '../extra/extra';
 import { figuresData, figuresResources } from './figuresResource';
-import { isSamePoint, pt, ptround } from '../common/Point';
+import { pt, ptround } from '../common/Point';
 import { FiguresBoard } from './figuresBoard';
-import { FigureActor, FigureColor, FigureColors, FigurePos, colorToStr } from './figures';
+import { FigureColor, FigureColors, FigurePos, colorToStr } from './figures';
+import { FigureActor } from "./figureActor";
+import { FiguresRules } from './figuresRules';
 
 enum FigureGameState {
     Start = 1,
@@ -13,24 +15,19 @@ enum FigureGameState {
     GameOver = 99,
     End = 99999,
 }
-class FiguresRules {
-    players: FigureActor[] = []
-    constructor() { }
-    getColorPlayers(color: FigureColor) {
-        return this.players.filter(p => p.position.color == color);
-    }
-    canUseDice(p: FigureActor, dice: number): boolean {
-        return true;
-    }
 
+interface FiguresSaveData {
+    state: FigureGameState
+    players: { color: FigureColor, positions: number[] }[];
 }
 
 class FiguresHomeScene extends ex.Scene {
     board: FiguresBoard
-    playerLabel: ex.Label;
+    statusLabel: ex.Label;
     rules = new FiguresRules();
     currentPlayerIndex = 0
-    get currentPlayer() { return this.rules.players[this.currentPlayerIndex]; }
+    get currentPlayerColor(): FigureColor { return FigureColors[this.currentPlayerIndex]; }
+
     diceNumber: number = 6
     dice: ex.Actor
     diceLabel: ex.Label
@@ -49,7 +46,6 @@ class FiguresHomeScene extends ex.Scene {
             this.remove(home);
         this.board = new FiguresBoard(this);
         this.board.drawPlan();
-        //this.drawPlan();
 
         this.initSelectionPointer();
         this.initDice();
@@ -59,12 +55,63 @@ class FiguresHomeScene extends ex.Scene {
     update(game: ex.Engine, delta: number) {
         super.update(game, delta);
         this.updateDice();
+        this.updateKeyboard();
         {
             //center label
             var measure = this.gameLabel.font.measureText(this.gameLabel.text);
             measure = measure.scale(this.gameLabel.font.scale);
             measure = measure.scale(this.gameLabel.scale);
             this.gameLabel.offset = ex.vec(-measure.width / 2, -measure.height / 2);
+        }
+    }
+    updateKeyboard() {
+        const game = this.engine;
+        if (game.input.keyboard.wasPressed(ex.Keys.S)) {
+            const s = this.save();
+            window.localStorage.setItem('SAVE', s);
+            console.log('saved');
+            return;
+        }
+        if (game.input.keyboard.wasPressed(ex.Keys.L)) {
+            const s = window.localStorage.getItem('SAVE');
+            console.log('loading');
+            this.load(s); //call to updateState
+            return;
+        }
+        if (game.input.keyboard.wasPressed(ex.Keys.Minus)
+            || game.input.keyboard.wasPressed(ex.Keys.NumSubtract)) {
+            let first = this.rules.getColorFigures(this.currentPlayerColor)[0];
+            //this can throw errors
+            let np = this.rules.getNextPos(first.position, -1);
+            if (!np)
+                return;
+            first.position = np;
+            return
+        }
+        if (game.input.keyboard.wasPressed(ex.Keys.Equal) /* + */
+            || game.input.keyboard.wasPressed(ex.Keys.NumAdd)) {
+            let first = this.rules.getColorFigures(this.currentPlayerColor)[0];
+            let np = this.rules.getNextPos(first.position, 1);
+            if (!np)
+                return;
+            //let path = this.board.getPathTo
+            first.position = np;
+            return
+        }
+        const DICEKEYS = [ex.Keys.Key1, ex.Keys.Key2, ex.Keys.Key3, ex.Keys.Key4, ex.Keys.Key5, ex.Keys.Key6];
+        for (let k of DICEKEYS) {
+            if (game.input.keyboard.wasPressed(k)) {
+                this.diceNumber = DICEKEYS.indexOf(k) + 1;
+                return
+            }
+        }
+        const PLAYERKEYS = [ex.Keys.Q, ex.Keys.W, ex.Keys.E, ex.Keys.R];
+        for (let k of PLAYERKEYS) {
+            if (game.input.keyboard.wasPressed(k)) {
+                this.currentPlayerIndex = PLAYERKEYS.indexOf(k);
+                this.updateState(FigureGameState.WaitForDice);
+                return
+            }
         }
     }
     initState() {
@@ -76,11 +123,11 @@ class FiguresHomeScene extends ex.Scene {
         });
         this.add(this.gameLabel);
 
-        this.playerLabel = new ex.Label({
+        this.statusLabel = new ex.Label({
             pos: ex.vec(20, this.engine.drawHeight - 100),
             font: figuresData.Font,
         });
-        this.add(this.playerLabel);
+        this.add(this.statusLabel);
         this.updateState(FigureGameState.Start);
     }
     updateState(state: FigureGameState) {
@@ -102,13 +149,13 @@ class FiguresHomeScene extends ex.Scene {
                 break;
             case FigureGameState.WaitForDice:
                 {
-                    let cs = colorToStr(this.currentPlayer.position.color);
-                    this.setPlayerLabel(`${cs} is on move\nwaiting for dice`);
+                    let cs = colorToStr(this.currentPlayerColor);
+                    this.setStatusLabel(`${cs} is on move\nwaiting for dice`);
                     this.rules
-                        .getColorPlayers(this.currentPlayer.position.color)
+                        .getColorFigures(this.currentPlayerColor)
                         .filter(p => !p.position.isGoal)
                         .forEach(p => {
-                            p.actions.clearActions();
+                            //p.actions.clearActions();
                             p.actions.blink(100, 100, 5);
                         });
                     this.diceLabel.actions
@@ -122,10 +169,10 @@ class FiguresHomeScene extends ex.Scene {
                 }
             case FigureGameState.DiceCalled:
                 {
-                    let cs = colorToStr(this.currentPlayer.position.color);
-                    if (!this.rules.canUseDice(this.currentPlayer, this.diceNumber)) {
-                        this.setPlayerLabel(`${cs} move is not possible\nNext please...`);
-                        this.playerLabel.actions
+                    let cs = colorToStr(this.currentPlayerColor);
+                    if (!this.rules.canUseDice(this.currentPlayerColor, this.diceNumber)) {
+                        this.setStatusLabel(`${cs} move is not possible\nNext please...`);
+                        this.statusLabel.actions
                             .delay(500)
                             .callMethod(() => {
                                 this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.rules.players.length;
@@ -133,7 +180,7 @@ class FiguresHomeScene extends ex.Scene {
                             });
                         break;
                     }
-                    this.setPlayerLabel(`${cs} is on move\nPlease move some figure`);
+                    this.setStatusLabel(`${cs} is on move\nPlease move some figure`);
                     break;
                 }
             case FigureGameState.GameOver:
@@ -151,12 +198,12 @@ class FiguresHomeScene extends ex.Scene {
                 break;
         }
     }
-    setPlayerLabel(t: string) {
-        this.playerLabel.text = t;
-        this.playerLabel.color = figuresData.getExColor(this.currentPlayer.position.color);
-        this.playerLabel.actions
+    setStatusLabel(t: string) {
+        this.statusLabel.text = t;
+        this.statusLabel.color = figuresData.getExColor(this.currentPlayerColor);
+        this.statusLabel.actions
             .clearActions();
-        this.playerLabel.actions
+        this.statusLabel.actions
             .blink(200, 200, 5);
     }
     initPlayers() {
@@ -183,16 +230,6 @@ class FiguresHomeScene extends ex.Scene {
         });
         this.add(dice);
         this.dice = dice;
-        /*
-        dice.events.on('pointerenter', (evt) => {
-            //dice.actions.blink(100,100,100);
-            //dice.actions.fade(0.6,200);
-        });
-        dice.events.on('pointerleave', (evt) => {
-            //dice.actions.getQueue().clearActions();
-            //dice.actions.fade(1, 200);
-        });
-        */
         dice.events.on('pointerdown', (evt) => {
             this.onDice_click();
         });
@@ -227,7 +264,7 @@ class FiguresHomeScene extends ex.Scene {
                 this.updateState(FigureGameState.DiceCalled);
             })
     }
-    private initSelectionPointer() {
+    initSelectionPointer() {
         let lbl = new ex.Label({
             pos: ex.vec(this.engine.drawWidth - 150, 10),
             scale: ex.vec(2, 2),
@@ -241,7 +278,6 @@ class FiguresHomeScene extends ex.Scene {
         });
         //selection.graphics.use(figuresData.selectionAnim);
         selection.graphics.use(figuresResources.PlanGlow.toSprite());
-        selection.z = 99;
         this.add(selection);
 
         this.input.pointers.events.on('move', (evt) => {
@@ -251,27 +287,36 @@ class FiguresHomeScene extends ex.Scene {
             if (pt.x >= 0 && pt.x < 10 && pt.y >= 0 && pt.y < 10) {
                 const pos = this.board.tileToWorld(pt);
                 selection.pos = pos;
+                selection.z = Math.max(pt.x, pt.y);
             } else {
                 selection.pos = ex.vec(-1000, -1000);
             }
         });
     }
-    private drawPlan() {
-        var map = figuresResources.PlanMap.data.split('\n');
-        for (var y = 0; y < map.length; y++) {
-            for (var x = 0; x < map[y].length; x++) {
-                var p = this.board.tileToWorld(pt(x, y));
-                var a = new ex.Actor({ pos: p });
-                var cell = map[y][x].toUpperCase();
-                if (cell == ' ' || cell == '\r')
-                    continue;
-                if (cell == 'X')
-                    cell = 'x';
-                a.graphics.use(figuresData.getPlanSprite(cell as any, 15));
-                this.add(a);
+
+    load(json: string) {
+        const data = JSON.parse(json) as FiguresSaveData;
+        for (var pi = 0; pi < data.players.length; pi++) {
+            let playerData = data.players[pi];
+            var figs = this.rules.getColorFigures(playerData.color);
+            for (var fi = 0; fi < figs.length; fi++) {
+                figs[fi].position = new FigurePos(playerData.color, playerData.positions[fi]);
             }
         }
+        this.updateState(data.state);
     }
+    save() {
+        const data: FiguresSaveData = {
+            state: this._state,
+            players: FigureColors.map(c => ({
+                color: c,
+                positions: this.rules.getColorFigures(c).map(fig => fig.position._position)
+            }))
+        };
+        return JSON.stringify(data, null, 4);
+    }
+
+
 }
 
 export function createFiguresHomeScene() {

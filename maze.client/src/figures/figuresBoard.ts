@@ -10,7 +10,7 @@ export class FiguresBoard {
     private WY = 20;
     private DX = 50;
     private DY = 29;
-    
+
     constructor(private scene: ex.Scene) {
         this.WX = scene.engine.halfDrawWidth;
     }
@@ -22,24 +22,29 @@ export class FiguresBoard {
     }
     worldToTile(vec: ICoordinates) {
         vec = ptrunc(vec);
-        let x = 0.5 +  (vec.x / this.DX + vec.y / this.DY - this.WY / this.DY - this.WX / this.DX) / 2;
+        let x = 0.5 + (vec.x / this.DX + vec.y / this.DY - this.WY / this.DY - this.WX / this.DX) / 2;
         let y = 1 + vec.y / this.DY - this.WY / this.DY - x;
         return ptround(pt(x, y));
     }
     figPosToTileAbs(p: FigurePos): ICoordinates {
-        if (p.isGoal)
-            return this.boardData.goal[p.goal];
+        if (p.isPlan) {
+            let g: ICoordinates[] = this.boardData.start;
+            g = g.concat(this.boardData.ground.flat());
+            let r = g[p.plan % g.length];
+            r = this.rotate90(r, Math.trunc(p.plan/g.length));
+            return r;
+        }
         if (p.isHome)
             return this.boardData.home[p.home];
-        //if (p.isPlan)
-        //    return this.boardData[p.plan];
-        console.error('Unknown fig position', p.color,p);
+        if (p.isGoal)
+            return this.boardData.goal[p.goal];
+        console.error('figPosToTileAbs error position', p.color, p);
     }
     figPosToTile(p: FigurePos): ICoordinates {
         let pt = this.figPosToTileAbs(p);
         if (pt) {
             const ci = FigureColors.indexOf(p.color);
-            pt = this.rotate90(pt, ci); 
+            pt = this.rotate90(pt, ci);
         }
         return pt;
     }

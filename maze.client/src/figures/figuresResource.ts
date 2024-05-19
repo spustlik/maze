@@ -20,7 +20,7 @@ export const figuresResources = new class BatmanResources {
     _Plan = new ex.ImageSource(path + "plan.png")
     PlanGlow = new ex.ImageSource(path + "plan_glow.png")
     _Pointer = new ex.ImageSource(path + "pointer.png")
-    PlanMap = new StringSource(path + "plan.txt")
+    //PlanMap = new StringSource(path + "plan.txt")
     _Selection = new ex.ImageSource(path + "selection.png")
 }
 export const figuresData = new class FiguresData {

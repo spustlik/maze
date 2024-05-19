@@ -10,6 +10,5 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\batman\" />
-    <Folder Include="src\figures\" />
   </ItemGroup>
 </Project>
