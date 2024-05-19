@@ -122,6 +122,12 @@ class FiguresHomeScene extends ex.Scene {
             //let path = this.board.getPathTo
             first.position = np;
         });
+        createButton('X', { width: 35 }, () => {
+            let c = this.currentPlayerColor;
+            let f = this.rules.getColorFigures(c)[0];
+            let p = this.rules.getEmptyHome(c);
+            f.die(p);
+        });
         newLine();
         posX = this.engine.drawWidth - 300; 
         posY = this.engine.drawHeight - 40;
@@ -238,11 +244,7 @@ class FiguresHomeScene extends ex.Scene {
         for (var p = 0; p < 4; p++) {
             const color = FigureColors[p];
             for (var i = 0; i < 4; i++) {
-                let player = new FigureActor(color, i,
-                    {
-                        offset: ex.vec(-5, -17)
-                    });
-                player.graphics.use(figuresData.getFigure(color))
+                let player = new FigureActor(color, i);
                 this.add(player);
                 this.rules.players.push(player);
             }

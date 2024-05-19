@@ -47,9 +47,9 @@ export class FigurePos {
     static readonly endOfPlan = 9 * 4;
     constructor(
         public readonly color: FigureColor,
-        position?:number
+        absPosition?:number
     ) {
-        this._position = position ?? 0;
+        this._position = absPosition ?? 0;
     }
     _position: number = 0;
 

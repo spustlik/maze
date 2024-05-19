@@ -1,4 +1,4 @@
-﻿import { FigureColor, FigurePos } from './figures';
+﻿import { FigureColor, FigureColors, FigurePos } from './figures';
 import { FigureActor } from "./figureActor";
 
 export class FiguresRules {
@@ -71,6 +71,23 @@ export class FiguresRules {
             pos.goal = p.goal + ofs;
             return pos;
         }
-        console.error('Error getting next position', p, ofs);
+        console.error('Cannot get next position', p, ofs);
+    }
+    getEmptyHome(c: FigureColor): FigurePos {
+        let myHome = this.getColorFigures(c).filter(f => f.position.isHome);
+        for (let i = 0; i < 4; i++) {
+            let found = myHome.find(f => f.position.home == i);
+            if (!found) {
+                let p = new FigurePos(c);
+                p.home = i;
+                return p;
+            }
+        }
+    }
+    getWinner() {
+        for (let c of FigureColors) {
+            if (this.getColorFigures(c).every(a => a.position.isGoal))
+                return c;
+        }
     }
 }

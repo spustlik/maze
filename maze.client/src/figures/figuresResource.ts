@@ -27,7 +27,7 @@ export const figuresResources = new class BatmanResources {
     Gui_Gray_Down = new ex.ImageSource(path + "gui_gray_down.png")
 }
 class FiguresData {
-    _Figures_Sheet = ex.SpriteSheet.fromImageSource({
+    private _figures_Sheet = ex.SpriteSheet.fromImageSource({
         image: figuresResources.Figures,
         grid: { columns: 4, rows: 1, spriteWidth: 47, spriteHeight: 56 }
     });
@@ -47,17 +47,17 @@ class FiguresData {
     getFigure(color: FigureColor) {
         const MAP: MapType<FigureColor, number> = { B: 0, G: 1, R: 2, Y: 3 };
         let i = MAP[color];
-        return this._Figures_Sheet.getSprite(i, 0);
+        return this._figures_Sheet.getSprite(i, 0);
     }
-    _Dice_Sheet = ex.SpriteSheet.fromImageSource({
+    private _dice_Sheet = ex.SpriteSheet.fromImageSource({
         image: figuresResources._Dice,
         grid: { columns: 3, rows: 2, spriteWidth: 100, spriteHeight: 86 }
     });
     getDiceNumber(n: number) {
         n = n - 1;
-        return this._Dice_Sheet.getSprite(n % 3, Math.trunc(n / 3));
+        return this._dice_Sheet.getSprite(n % 3, Math.trunc(n / 3));
     }
-    _Pointer_Sheet = ex.SpriteSheet.fromImageSource({
+    private _pointer_Sheet = ex.SpriteSheet.fromImageSource({
         image: figuresResources._Pointer,
         grid: { columns: 4, rows: 4, spriteWidth: 33, spriteHeight: 37 }
     });
@@ -66,9 +66,9 @@ class FiguresData {
         const dir_map: MapType<FigDirection, number> = { W: 0, S: 1, E: 2, N: 3 };
         const d = dir_map[direction];
         const c = col_map[color];
-        return this._Pointer_Sheet.getSprite(d, c);
+        return this._pointer_Sheet.getSprite(d, c);
     }
-    _Plan_Sheet = ex.SpriteSheet.fromImageSource({
+    private _plan_Sheet = ex.SpriteSheet.fromImageSource({
         image: figuresResources._Plan,
         grid: { columns: 8, rows: 10, spriteWidth: 50, spriteHeight: 31 }
     });
@@ -90,25 +90,44 @@ class FiguresData {
         // W S
         const type_map: MapType<FigureColorX, number> = { x: 0, Y: 1, G: 2, R: 3, B: 4 };
         const t = type_map[type];
-        return this._Plan_Sheet.getSprite(joints % 8, t * 2 + Math.trunc(joints / 8));
+        return this._plan_Sheet.getSprite(joints % 8, t * 2 + Math.trunc(joints / 8));
     }
-    _Anim_Sheets = [
+    private _sheet(opts: ex.SpriteSheetGridOptions & { offset?: ex.Vector }) {
+        return { ss: ex.SpriteSheet.fromImageSource(opts), ofs: opts.offset };
+    }
+    private _dieAnim_Sheets = [
         //blue
-        ex.SpriteSheet.fromImageSource({ image: figuresResources._D1, grid: { columns: 8, rows: 4, spriteWidth: 47, spriteHeight: 56 } }),
-        ex.SpriteSheet.fromImageSource({ image: figuresResources._D7, grid: { columns: 8, rows: 4, spriteWidth: 60, spriteHeight: 62 } }),
-        ex.SpriteSheet.fromImageSource({ image: figuresResources._D8, grid: { columns: 8, rows: 4, spriteWidth: 78, spriteHeight: 87 } }),
+        this._sheet({ image: figuresResources._D1, grid: { columns: 8, rows: 4, spriteWidth: 47, spriteHeight: 56 }, offset: ex.vec(-5, -17) }),
+        this._sheet({ image: figuresResources._D7, grid: { columns: 8, rows: 4, spriteWidth: 60, spriteHeight: 62 }, offset: ex.vec(1, -16) }),
+        this._sheet({ image: figuresResources._D8, grid: { columns: 8, rows: 4, spriteWidth: 78, spriteHeight: 87 }, offset: ex.vec(0, -5) }),
         //green
-        ex.SpriteSheet.fromImageSource({ image: figuresResources._D2, grid: { columns: 8, rows: 4, spriteWidth: 47, spriteHeight: 56 } }),
+        this._sheet({ image: figuresResources._D2, grid: { columns: 8, rows: 4, spriteWidth: 47, spriteHeight: 56 }, offset: ex.vec(-5, -17) }),
         //yellow
-        ex.SpriteSheet.fromImageSource({ image: figuresResources._D3, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 67 } }),
-        ex.SpriteSheet.fromImageSource({ image: figuresResources._D5, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 70 } }),
+        this._sheet({ image: figuresResources._D3, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 67 }, offset: ex.vec(0, -11) }),
+        this._sheet({ image: figuresResources._D5, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 70 }, offset: ex.vec(1, -11) }),
         //red
-        ex.SpriteSheet.fromImageSource({ image: figuresResources._D4, grid: { columns: 8, rows: 4, spriteWidth: 56, spriteHeight: 60 } }),
+        this._sheet({ image: figuresResources._D4, grid: { columns: 8, rows: 4, spriteWidth: 56, spriteHeight: 60 }, offset: ex.vec(-1, -14) }),
     ];
-    getAnim(index: number, delay: number) {
-        return ex.Animation.fromSpriteSheet(this._Anim_Sheets[index], ex.range(0, 8 * 4 - 1), delay, ex.AnimationStrategy.End);
+
+    getDieAnimSpriteOptions(index: number, delay: number) {
+        let opts = this._dieAnim_Sheets[index];
+        let a = ex.Animation.fromSpriteSheet(opts.ss, ex.range(0, 8 * 4 - 1), delay, ex.AnimationStrategy.End);
+        return { anim: a, offset: opts.ofs };
     }
-    _selection_Sheet = ex.SpriteSheet.fromImageSource({
+    getDieAnim(c: FigureColor) {
+        let i = 0;
+        if (c == 'B')
+            i = ex.randomIntInRange(0, 2);
+        else if (c == 'G')
+            i = 3 + ex.randomIntInRange(0, 0);
+        else if (c == 'Y')
+            i = 4 + ex.randomIntInRange(0, 1);
+        else if (c == 'R')
+            i = 6 + ex.randomIntInRange(0, 0);
+        i = 6;
+        return this.getDieAnimSpriteOptions(i, 50);
+    }
+    private _selection_Sheet = ex.SpriteSheet.fromImageSource({
         image: figuresResources._Selection,
         grid: { columns: 4, rows: 2, spriteWidth: 79, spriteHeight: 49 }
     });
@@ -125,6 +144,7 @@ class FiguresData {
     /*
     private gs(src: ex.SourceView) {
         let s = figuresResources._Gui.toSprite();
+        //TODO: use ex.SpriteSheet.fromImageSourceWithSourceViews
         s.sourceView = src;
         return s;
     }
