@@ -19,6 +19,7 @@ export const figuresResources = new class BatmanResources {
     _D8 = new ex.ImageSource(path + "d8.png")
     _D10 = new ex.ImageSource(path + "d10.png")
     _D11 = new ex.ImageSource(path + "d11.png")
+    _D12 = new ex.ImageSource(path + "d12.png")
     _Plan = new ex.ImageSource(path + "plan.png")
     PlanGlow = new ex.ImageSource(path + "plan_glow.png")
     _Pointer = new ex.ImageSource(path + "pointer.png")
@@ -119,15 +120,19 @@ class FiguresData {
 
         //red - melt
         this._sheet('R', { image: figuresResources._D4, grid: { columns: 8, rows: 4, spriteWidth: 56, spriteHeight: 60 }, offset: ex.vec(-1, -14) }),
+        //red - SG teleport
+        this._sheet('R', { image: figuresResources._D12, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 80 }, offset: ex.vec(2, -16), delay: 40 }),
 
         //nakrajet na kousky, asi vodorovne, kazdy odjede na jinou stranu
         //rozpadne se jako sklo
-        //teleport do nebe, teoreticky i UFO
-        //teleport ala SG kruhy
-        //teleport ala StarTrek - particles, nebo halo eff
+        //(teleport do nebe, teoreticky i UFO)
+        //(teleport ala StarTrek - particles, nebo halo eff)
         //ohen, spadne popel
         //twist do tycky
         //voda se roztece, pozor stejne jako RED
+        //YELLOW - citronove platky
+        //GREEN - neco s rustem
+        //sandworm z duny
 
     ];
 
@@ -135,7 +140,7 @@ class FiguresData {
         let copts = this._dieAnim_Sheets.filter(a => a.color == c);
         let r = ex.randomIntInRange(0, copts.length-1);
         let opts = copts[r];
-        opts = this._dieAnim_Sheets[5];
+        opts = this._dieAnim_Sheets[9];
         //console.log('getDieAnim', c, r, copts.length, opts);
         let a = ex.Animation.fromSpriteSheet(opts.sheet, ex.range(0, 8 * 4 - 1), opts.delay, ex.AnimationStrategy.End);
         return { anim: a, offset: opts.ofs };
