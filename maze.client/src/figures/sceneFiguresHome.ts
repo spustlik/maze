@@ -70,7 +70,7 @@ class FiguresHomeScene extends ex.Scene {
                 let font = figuresData.Font;
                 let lbl = new ex.Label({
                     text,
-                    name:'LBL_'+text,
+                    name: 'LBL_' + text,
                     font,
                     color: args.color,
                     pos: ex.vec(10, 5),
@@ -129,7 +129,7 @@ class FiguresHomeScene extends ex.Scene {
             f.die(p);
         });
         newLine();
-        posX = this.engine.drawWidth - 300; 
+        posX = this.engine.drawWidth - 300;
         posY = this.engine.drawHeight - 40;
         for (let i = 0; i < 6; i++) {
             createButton((i + 1).toString(), { width: 35 }, () => {

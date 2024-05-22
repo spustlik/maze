@@ -20,6 +20,7 @@ export const figuresResources = new class BatmanResources {
     _D10 = new ex.ImageSource(path + "d10.png")
     _D11 = new ex.ImageSource(path + "d11.png")
     _D12 = new ex.ImageSource(path + "d12.png")
+    _D14 = new ex.ImageSource(path + "d14.png")
     _Plan = new ex.ImageSource(path + "plan.png")
     PlanGlow = new ex.ImageSource(path + "plan_glow.png")
     _Pointer = new ex.ImageSource(path + "pointer.png")
@@ -109,38 +110,41 @@ class FiguresData {
         //green - acid
         this._sheet('G', { image: figuresResources._D2, grid: { columns: 8, rows: 4, spriteWidth: 47, spriteHeight: 56 }, offset: ex.vec(-5, -17) }),
         //green - hole fall
-        this._sheet('G', { image: figuresResources._D10, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 80 }, offset: ex.vec(1, -16), delay:15 }),
-        //green - twist down
-        this._sheet('G', { image: figuresResources._D11, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 80 }, offset: ex.vec(1, -16), delay: 20 }),
+        this._sheet('G', { image: figuresResources._D10, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 80 }, offset: ex.vec(1, -16), delay: 15 }),
+        //green - foliage
+        this._sheet('G', { image: figuresResources._D14, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 80 }, offset: ex.vec(1, -16), delay: 30 }),
 
         //yellow - skeleton
         this._sheet('Y', { image: figuresResources._D3, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 67 }, offset: ex.vec(0, -11) }),
-        //yellow - disintegration
+        //yellow - desintegration
         this._sheet('Y', { image: figuresResources._D5, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 70 }, offset: ex.vec(1, -11) }),
+        //yellow - twist down
+        this._sheet('Y', { image: figuresResources._D11, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 80 }, offset: ex.vec(1, -16), delay: 20 }),
 
         //red - melt
         this._sheet('R', { image: figuresResources._D4, grid: { columns: 8, rows: 4, spriteWidth: 56, spriteHeight: 60 }, offset: ex.vec(-1, -14) }),
         //red - SG teleport
         this._sheet('R', { image: figuresResources._D12, grid: { columns: 8, rows: 4, spriteWidth: 80, spriteHeight: 80 }, offset: ex.vec(2, -16), delay: 40 }),
 
+
+
         //nakrajet na kousky, asi vodorovne, kazdy odjede na jinou stranu
         //rozpadne se jako sklo
         //(teleport do nebe, teoreticky i UFO)
         //(teleport ala StarTrek - particles, nebo halo eff)
         //ohen, spadne popel
-        //twist do tycky
-        //voda se roztece, pozor stejne jako RED
-        //YELLOW - citronove platky
-        //GREEN - neco s rustem
+        //YELLOW - citronove platky - nicmoc
+        //yellow - twist down - nicmoc
         //sandworm z duny
-
+        //blesk
+        //magie
     ];
 
     getDieAnim(c: FigureColor) {
         let copts = this._dieAnim_Sheets.filter(a => a.color == c);
         let r = ex.randomIntInRange(0, copts.length-1);
         let opts = copts[r];
-        opts = this._dieAnim_Sheets[9];
+        opts = this._dieAnim_Sheets[8];
         //console.log('getDieAnim', c, r, copts.length, opts);
         let a = ex.Animation.fromSpriteSheet(opts.sheet, ex.range(0, 8 * 4 - 1), opts.delay, ex.AnimationStrategy.End);
         return { anim: a, offset: opts.ofs };
