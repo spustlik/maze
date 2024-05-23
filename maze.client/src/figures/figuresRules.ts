@@ -1,6 +1,13 @@
 ﻿import { FigureColor, FigureColors, FigurePos } from './figures';
 import { FigureActor } from "./figureActor";
 
+export type FigureMove = {
+    target: 'START' | 'PLAN' | 'GOAL'
+    current: FigurePos
+    newPosition: FigurePos
+    enemy?: FigureActor
+}
+
 export class FiguresRules {
     players: FigureActor[] = [];
     constructor() { }
@@ -10,43 +17,45 @@ export class FiguresRules {
     canUseDice(c: FigureColor, dice: number): boolean {
         return this.getColorFigures(c)
             .map(pl => this.canPlayerUseDice(pl, dice))
-            .filter(n => n != null)
+            .filter(n => n)
             .length > 0;
     }
     private canPlayerUseDice(p: FigureActor, dice: number): boolean {
-        let next = this.getNext(p, dice);
+        let next = this.getNext(p.position, dice);
         return !!next;
     }
-    public getPlayerNextMoves(c: FigureColor, ofs: number) {
+    public getPlayerNextMoves(c: FigureColor, ofs: number): FigureMove[] {
         let player = this.getColorFigures(c);
-        return player.map(p => this.getNext(p, ofs));
+        return player.map(p => this.getNext(p.position, ofs));
     }
-    private getNext(p: FigureActor, ofs: number): { target: 'START' | 'PLAN' | 'GOAL'; newPosition: FigurePos; enemy?: FigureActor; } {
-        const myPlayers = this.getColorFigures(p.position.color);
-        const nextPos = this.getNextPos(p.position, ofs);
+    private getNext(p: FigurePos, ofs: number): FigureMove {
+        const myPlayers = this.getColorFigures(p.color);
+        const nextPos = this.getNextPos(p, ofs);
+        if (!nextPos)
+            return null;
         let targetPlayer = this.players.find(p => p.position.equals(nextPos));
-        let targetMe = targetPlayer?.position.color == p.position.color;
+        let targetMe = targetPlayer?.position.color == p.color;
         let enemy = targetMe ? null : targetPlayer;
         if (ofs == 6
             && !targetMe
             && myPlayers.find(p => p.position.isHome)) {
             //6 and somebody in home, and not ME on the start
-            return { target: 'START', newPosition: nextPos, enemy };
+            return { current: p, target: 'START', newPosition: nextPos, enemy };
         }
         if (nextPos.isPlan && !targetMe) {
-            return { target: 'PLAN', newPosition: nextPos, enemy };
+            return { current: p, target: 'PLAN', newPosition: nextPos, enemy };
         }
         if (nextPos.isGoal && !targetMe) {
-            return { target: 'GOAL', newPosition: nextPos, enemy };
+            return { current: p, target: 'GOAL', newPosition: nextPos, enemy };
         }
-        console.log('Unpossible move', p.position, nextPos, targetPlayer.position);
+        console.log('Impossible move', p, nextPos, targetPlayer.position);
         //! 6 can mean that player wants to roll again
         // can some figure go to new position ?
         // is there goal, or another player ? is it me or enemy?
         return null;
     }
     public getNextPos(p: FigurePos, ofs: number): FigurePos {
-        if (p.isHome) {
+        if (p.isHome && ofs == 6) {
             //move from home to plan
             let pos = new FigurePos(p.color);
             pos.plan = 0;
@@ -71,7 +80,7 @@ export class FiguresRules {
             pos.goal = p.goal + ofs;
             return pos;
         }
-        console.error('Cannot get next position', p, ofs);
+        //console.error('Cannot get next position', p, ofs);
     }
     getEmptyHome(c: FigureColor): FigurePos {
         let myHome = this.getColorFigures(c).filter(f => f.position.isHome);

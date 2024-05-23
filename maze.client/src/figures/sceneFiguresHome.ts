@@ -25,8 +25,8 @@ class FiguresHomeScene extends ex.Scene {
     board: FiguresBoard
     statusLabel: ex.Label;
     rules = new FiguresRules();
-    currentPlayerIndex = 0
-    get currentPlayerColor(): FigureColor { return FigureColors[this.currentPlayerIndex]; }
+    currentColorIndex = 0
+    get currentColor(): FigureColor { return FigureColors[this.currentColorIndex]; }
 
     diceNumber: number = 6
     dice: ex.Actor
@@ -67,7 +67,7 @@ class FiguresHomeScene extends ex.Scene {
             let gup = getScaledGraphics9(figuresResources.Gui_Gray_Up, w, 30, 10, 10);
             let gdown = getScaledGraphics9(figuresResources.Gui_Gray_Down, w, 30, 10, 10);
             {
-                let font = figuresData.Font;
+                let font = figuresData.Font; // getFont({ size: 16 });
                 let lbl = new ex.Label({
                     text,
                     name: 'LBL_' + text,
@@ -100,14 +100,14 @@ class FiguresHomeScene extends ex.Scene {
         for (let i = 0; i < FigureColors.length; i++) {
             const c = FigureColors[i];
             createButton(c, { color: figuresData.getExColor(c), width: 40 }, () => {
-                this.currentPlayerIndex = i;
+                this.currentColorIndex = i;
                 this.updateState(FigureGameState.WaitForDice);
                 return
             });
         }
         newLine();
         createButton('-', { width: 35 }, () => {
-            let first = this.rules.getColorFigures(this.currentPlayerColor)[0];
+            let first = this.rules.getColorFigures(this.currentColor)[0];
             //this can throw errors
             let np = this.rules.getNextPos(first.position, -1);
             if (!np)
@@ -115,7 +115,7 @@ class FiguresHomeScene extends ex.Scene {
             first.position = np;
         });
         createButton('+', { width: 35 }, () => {
-            let first = this.rules.getColorFigures(this.currentPlayerColor)[0];
+            let first = this.rules.getColorFigures(this.currentColor)[0];
             let np = this.rules.getNextPos(first.position, 1);
             if (!np)
                 return;
@@ -123,7 +123,7 @@ class FiguresHomeScene extends ex.Scene {
             first.position = np;
         });
         createButton('X', { width: 35 }, () => {
-            let c = this.currentPlayerColor;
+            let c = this.currentColor;
             let f = this.rules.getColorFigures(c)[0];
             let p = this.rules.getEmptyHome(c);
             f.die(p);
@@ -183,10 +183,10 @@ class FiguresHomeScene extends ex.Scene {
                 break;
             case FigureGameState.WaitForDice:
                 {
-                    let cs = colorToStr(this.currentPlayerColor);
+                    let cs = colorToStr(this.currentColor);
                     this.setStatusLabel(`${cs} is on move\nwaiting for dice`);
                     this.rules
-                        .getColorFigures(this.currentPlayerColor)
+                        .getColorFigures(this.currentColor)
                         .filter(p => !p.position.isGoal)
                         .forEach(p => {
                             //p.actions.clearActions();
@@ -203,18 +203,25 @@ class FiguresHomeScene extends ex.Scene {
                 }
             case FigureGameState.DiceCalled:
                 {
-                    let cs = colorToStr(this.currentPlayerColor);
-                    if (!this.rules.canUseDice(this.currentPlayerColor, this.diceNumber)) {
+                    let cs = colorToStr(this.currentColor);
+                    if (!this.rules.canUseDice(this.currentColor, this.diceNumber)) {
                         this.setStatusLabel(`${cs} move is not possible\nNext please...`);
+                        //TODO: nice to move old message up, and fade out
                         this.statusLabel.actions
                             .delay(500)
                             .callMethod(() => {
-                                this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.rules.players.length;
+                                this.currentColorIndex = (this.currentColorIndex + 1) % FigureColors.length;
                                 this.updateState(FigureGameState.WaitForDice);
                             });
                         break;
                     }
                     this.setStatusLabel(`${cs} is on move\nPlease move some figure`);
+                    let next = this.rules.getPlayerNextMoves(this.currentColor, this.diceNumber);
+                    for (let n of next) {
+                        if (n != null)
+                            console.log('next:', n.target, n.newPosition, 'ENEMY:' + n.enemy?.position?.color);
+                    }
+                    //this.posibleMoves = next;
                     break;
                 }
             case FigureGameState.GameOver:
@@ -234,7 +241,7 @@ class FiguresHomeScene extends ex.Scene {
     }
     setStatusLabel(t: string) {
         this.statusLabel.text = t;
-        this.statusLabel.color = figuresData.getExColor(this.currentPlayerColor);
+        this.statusLabel.color = figuresData.getExColor(this.currentColor);
         this.statusLabel.actions
             .clearActions();
         this.statusLabel.actions
@@ -266,7 +273,7 @@ class FiguresHomeScene extends ex.Scene {
         this.diceLabel = new ex.Label({
             pos: dice.pos,
             offset: ex.vec(-20, -30),
-            font: figuresData.getFont({ scale: ex.vec(4, 4) }),
+            font: figuresData.getFont({ size: 80 }),
             text: '?',
             opacity: 0
         });
