@@ -1,4 +1,6 @@
-﻿export type MapType<K extends string | number | symbol, V> = {
+﻿//v1.0 2024-05-24
+
+export type MapType<K extends string | number | symbol, V> = {
     [X in K]: V;
 };
 

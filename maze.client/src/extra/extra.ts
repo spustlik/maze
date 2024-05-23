@@ -1,3 +1,4 @@
+//v1.0 2024-05-23
 import * as ex from 'excalibur';
 
 export function loadResources(loader: ex.DefaultLoader, resObj:any) {

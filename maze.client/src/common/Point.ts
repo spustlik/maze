@@ -1,4 +1,5 @@
-﻿export type ICoordinates = { x: number, y: number };
+﻿//v1.0 2024-05-23
+export type ICoordinates = { x: number, y: number };
 export type IRect = {
     x: number,
     y: number,
