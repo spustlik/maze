@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Layouts>
+  <File FileName="FLACON.XCF" Zoom="1" Offset="0">
+    <View Type="ImageSheetViewPart" Width="459">
+      <Layout Columns="1" Rows="0" Width="0" Height="0" Count="0" ShowLabels="true" />
+    </View>
+    <View Type="ImageSpriteViewPart">
+      <Layout Columns="7" Width="100" Height="300" Animate="false" AnimationSpeed="25" ShowLabels="true" Stretch="true">
+        <Images Name="layer #4" Description="Xcf: GIMP image (+R-W+M)&#xD;&#xA;Attributes:&#xD;&#xA;  date:create = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:modify = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:timestamp = 2024-07-17T19:18:51+00:00&#xD;&#xA;  label = layer #4&#xD;&#xA;BoundingBox: 65x64+18+223&#xD;&#xA;Channels: Cyan,Green,Blue,Alpha&#xD;&#xA;Color space, depth: sRGB, 8&#xD;&#xA;Density: 300x300 inch&#xD;&#xA;Gamma: 0,454545454545455&#xD;&#xA;Compose: Over&#xD;&#xA;" />
+        <Images Name="layer #3" Description="Xcf: GIMP image (+R-W+M)&#xD;&#xA;Attributes:&#xD;&#xA;  date:create = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:modify = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:timestamp = 2024-07-17T19:18:51+00:00&#xD;&#xA;  label = layer #3&#xD;&#xA;BoundingBox: 65x64+18+159&#xD;&#xA;Channels: Cyan,Green,Blue,Alpha&#xD;&#xA;Color space, depth: sRGB, 8&#xD;&#xA;Density: 300x300 inch&#xD;&#xA;Gamma: 0,454545454545455&#xD;&#xA;Compose: Over&#xD;&#xA;" />
+        <Images Name="layer #2" Description="Xcf: GIMP image (+R-W+M)&#xD;&#xA;Attributes:&#xD;&#xA;  date:create = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:modify = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:timestamp = 2024-07-17T19:18:51+00:00&#xD;&#xA;  label = layer #2&#xD;&#xA;BoundingBox: 65x64+18+95&#xD;&#xA;Channels: Cyan,Green,Blue,Alpha&#xD;&#xA;Color space, depth: sRGB, 8&#xD;&#xA;Density: 300x300 inch&#xD;&#xA;Gamma: 0,454545454545455&#xD;&#xA;Compose: Over&#xD;&#xA;" />
+        <Images Name="layer #1" Description="Xcf: GIMP image (+R-W+M)&#xD;&#xA;Attributes:&#xD;&#xA;  date:create = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:modify = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:timestamp = 2024-07-17T19:18:51+00:00&#xD;&#xA;  label = layer #1&#xD;&#xA;BoundingBox: 65x64+18+31&#xD;&#xA;Channels: Cyan,Green,Blue,Alpha&#xD;&#xA;Color space, depth: sRGB, 8&#xD;&#xA;Density: 300x300 inch&#xD;&#xA;Gamma: 0,454545454545455&#xD;&#xA;Compose: Over&#xD;&#xA;" />
+        <Images Name="flacon" Description="Xcf: GIMP image (+R-W+M)&#xD;&#xA;Attributes:&#xD;&#xA;  date:create = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:modify = 2024-07-17T19:18:51+00:00&#xD;&#xA;  date:timestamp = 2024-07-17T19:18:51+00:00&#xD;&#xA;  label = flacon&#xD;&#xA;BoundingBox: 91x278+5+11&#xD;&#xA;Channels: Cyan,Green,Blue,Alpha&#xD;&#xA;Color space, depth: sRGB, 8&#xD;&#xA;Density: 300x300 inch&#xD;&#xA;Gamma: 0,454545454545455&#xD;&#xA;Compose: Over&#xD;&#xA;" />
+      </Layout>
+    </View>
+  </File>
+</Layouts>
